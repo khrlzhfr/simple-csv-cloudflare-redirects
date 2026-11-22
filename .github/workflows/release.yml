@@ -1,0 +1,49 @@
+name: Release
+
+# Publish a release in either of two ways:
+# - push a tag like v1.0.1 (matching the Version in the plugin header), or
+# - create a release with that tag on GitHub's website.
+# Both build and attach:
+# - simple-csv-cloudflare-redirects.zip: the GitHub build, with the updater
+# - simple-csv-cloudflare-redirects-wporg.zip: the WordPress.org build, without it
+on:
+  push:
+    tags: ['v*']
+  release:
+    types: [published]
+
+concurrency:
+  group: release-${{ github.ref_name }}
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check the tag matches the plugin version
+        run: |
+          version=$(grep -m1 -E '^\s*\*\s*Version:' simple-csv-cloudflare-redirects.php | awk '{print $NF}')
+          if [ "v${version}" != "${GITHUB_REF_NAME}" ]; then
+            echo "Plugin header says ${version}, but the tag is ${GITHUB_REF_NAME}." >&2
+            exit 1
+          fi
+
+      - name: Build the zips
+        run: |
+          mkdir -p dist
+          git archive --format=zip --prefix=simple-csv-cloudflare-redirects/ -o dist/simple-csv-cloudflare-redirects.zip HEAD
+          git archive --format=zip --prefix=simple-csv-cloudflare-redirects/ -o dist/simple-csv-cloudflare-redirects-wporg.zip HEAD -- . ':!lib' ':!includes/github-updater.php' ':!README.md'
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1; then
+            gh release upload "${GITHUB_REF_NAME}" dist/*.zip --clobber
+          else
+            gh release create "${GITHUB_REF_NAME}" dist/*.zip --title "${GITHUB_REF_NAME}" --generate-notes
+          fi
