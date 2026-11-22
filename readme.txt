@@ -1,10 +1,10 @@
-=== Simple CSV & Cloudflare Redirects ===
+=== Simple CSV Redirects with Cloudflare ===
 Contributors: khrlzhfr
 Tags: redirects, redirect, csv, cloudflare, 301
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.2
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ Manage redirects as CSV rules in WordPress, and optionally as Cloudflare Single 
 
 == Description ==
 
-Simple CSV & Cloudflare Redirects gives you two ways to manage redirects from one screen under **Tools → Redirects**:
+Simple CSV Redirects with Cloudflare gives you two ways to manage redirects from one screen under **Tools → Redirects**:
 
 * **CSV Rules** – unlimited redirects kept in a single CSV file and applied by WordPress. Add, edit, reorder, enable, disable and delete rules in WordPress, or download the CSV, edit it in a spreadsheet and upload it again.
 * **Cloudflare Rules** (optional) – manage Cloudflare Single Redirect rules for your domains, which redirect at Cloudflare's edge before a request reaches your server.
@@ -75,6 +75,9 @@ Zone → Single Redirect → Edit, and Zone → Zone → Read, limited to the do
 
 == Changelog ==
 
+= 1.1.0 =
+* Renamed to Simple CSV Redirects with Cloudflare. The plugin folder is now simple-csv-redirects-with-cloudflare, so WordPress treats it as a new plugin. Download your CSV from the old copy first: deleting the old copy removes its CSV and change log.
+
 = 1.0.2 =
 * Reads and writes CSV text without temporary streams.
 * Each action checks its security token before reading any input.
@@ -90,5 +93,5 @@ Zone → Single Redirect → Edit, and Zone → Zone → Read, limited to the do
 
 == Upgrade Notice ==
 
-= 1.0.2 =
-Code clean-up; no change in how redirects work.
+= 1.1.0 =
+New name and plugin folder. Download your CSV before deleting the old copy.

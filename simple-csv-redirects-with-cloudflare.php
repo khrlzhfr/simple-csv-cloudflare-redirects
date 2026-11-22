@@ -1,16 +1,16 @@
 <?php
 /**
- * Plugin Name:       Simple CSV & Cloudflare Redirects
- * Plugin URI:        https://github.com/khrlzhfr/simple-csv-cloudflare-redirects
+ * Plugin Name:       Simple CSV Redirects with Cloudflare
+ * Plugin URI:        https://github.com/khrlzhfr/simple-csv-redirects-with-cloudflare
  * Description:       Manage redirects as CSV rules in WordPress, and optionally as Cloudflare Single Redirect rules, from Tools → Redirects.
- * Version:           1.0.2
+ * Version:           1.1.0
  * Requires at least: 6.4
  * Requires PHP:      7.4
  * Author:            Khairil Zhafri
  * Author URI:        https://khrlzh.fr
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       simple-csv-cloudflare-redirects
+ * Text Domain:       simple-csv-redirects-with-cloudflare
  *
  * Cloudflare Rules are optional and configured in wp-config.php (see the Setup tab):
  *
@@ -25,7 +25,7 @@
 defined( 'ABSPATH' ) || exit;
 
 define( 'RFCF_FILE', __FILE__ );
-define( 'RFCF_VERSION', '1.0.2' );
+define( 'RFCF_VERSION', '1.1.0' );
 
 require_once __DIR__ . '/includes/class-rfcf-config.php';
 require_once __DIR__ . '/includes/class-rfcf-csv.php';

@@ -133,13 +133,13 @@ final class RFCF_Admin {
 
 	public function event_label( $event ) {
 		$labels = [
-			'added'    => __( 'Added', 'simple-csv-cloudflare-redirects' ),
-			'updated'  => __( 'Edited', 'simple-csv-cloudflare-redirects' ),
-			'enabled'  => __( 'Enabled', 'simple-csv-cloudflare-redirects' ),
-			'disabled' => __( 'Disabled', 'simple-csv-cloudflare-redirects' ),
-			'deleted'  => __( 'Deleted', 'simple-csv-cloudflare-redirects' ),
-			'moved'    => __( 'Moved', 'simple-csv-cloudflare-redirects' ),
-			'csv'      => __( 'CSV uploaded', 'simple-csv-cloudflare-redirects' ),
+			'added'    => __( 'Added', 'simple-csv-redirects-with-cloudflare' ),
+			'updated'  => __( 'Edited', 'simple-csv-redirects-with-cloudflare' ),
+			'enabled'  => __( 'Enabled', 'simple-csv-redirects-with-cloudflare' ),
+			'disabled' => __( 'Disabled', 'simple-csv-redirects-with-cloudflare' ),
+			'deleted'  => __( 'Deleted', 'simple-csv-redirects-with-cloudflare' ),
+			'moved'    => __( 'Moved', 'simple-csv-redirects-with-cloudflare' ),
+			'csv'      => __( 'CSV uploaded', 'simple-csv-redirects-with-cloudflare' ),
 		];
 		return $labels[ $event ] ?? $event;
 	}
@@ -154,13 +154,13 @@ final class RFCF_Admin {
 			$s .= ' +query';
 		}
 		if ( ! $f['enabled'] ) {
-			$s .= ' [' . __( 'disabled', 'simple-csv-cloudflare-redirects' ) . ']';
+			$s .= ' [' . __( 'disabled', 'simple-csv-redirects-with-cloudflare' ) . ']';
 		}
 		return $s;
 	}
 
 	private function rule_label( array $rule ) {
-		return '' !== ( $rule['description'] ?? '' ) ? $rule['description'] : __( '(no description)', 'simple-csv-cloudflare-redirects' );
+		return '' !== ( $rule['description'] ?? '' ) ? $rule['description'] : __( '(no description)', 'simple-csv-redirects-with-cloudflare' );
 	}
 
 	/* ------------------------------------------------------------------ *
@@ -210,7 +210,7 @@ final class RFCF_Admin {
 		$msg  = $e->get_error_message();
 		$data = $e->get_error_data();
 		if ( isset( $data['status'] ) && in_array( (int) $data['status'], [ 401, 403 ], true ) ) {
-			$msg .= ' ' . __( 'Check that the API token has the Single Redirect permission (Read, or Edit for changes) on this zone.', 'simple-csv-cloudflare-redirects' );
+			$msg .= ' ' . __( 'Check that the API token has the Single Redirect permission (Read, or Edit for changes) on this zone.', 'simple-csv-redirects-with-cloudflare' );
 		}
 		return $msg;
 	}
@@ -218,7 +218,7 @@ final class RFCF_Admin {
 	/** Stops unless the current user may manage redirects. Each handler then checks its nonce itself. */
 	private function require_cap() {
 		if ( ! RFCF_Config::user_can_manage() ) {
-			wp_die( esc_html__( 'Sorry, you are not allowed to do this.', 'simple-csv-cloudflare-redirects' ), 403 );
+			wp_die( esc_html__( 'Sorry, you are not allowed to do this.', 'simple-csv-redirects-with-cloudflare' ), 403 );
 		}
 	}
 
@@ -230,7 +230,7 @@ final class RFCF_Admin {
 	}
 
 	private function deny_zone() {
-		wp_die( esc_html__( 'This website is not on the allowed list.', 'simple-csv-cloudflare-redirects' ), 403 );
+		wp_die( esc_html__( 'This website is not on the allowed list.', 'simple-csv-redirects-with-cloudflare' ), 403 );
 	}
 
 	private function back_to_list( $zone ) {
@@ -276,8 +276,8 @@ final class RFCF_Admin {
 			return;
 		}
 		$this->hook = (string) add_management_page(
-			__( 'Redirects', 'simple-csv-cloudflare-redirects' ),
-			__( 'Redirects', 'simple-csv-cloudflare-redirects' ),
+			__( 'Redirects', 'simple-csv-redirects-with-cloudflare' ),
+			__( 'Redirects', 'simple-csv-redirects-with-cloudflare' ),
 			'read',
 			self::SLUG,
 			[ $this, 'render_page' ]
@@ -309,7 +309,7 @@ final class RFCF_Admin {
 
 	public function action_links( $links ) {
 		if ( RFCF_Config::user_can_manage() ) {
-			array_unshift( $links, sprintf( '<a href="%s">%s</a>', esc_url( $this->page_url() ), esc_html__( 'Redirects', 'simple-csv-cloudflare-redirects' ) ) );
+			array_unshift( $links, sprintf( '<a href="%s">%s</a>', esc_url( $this->page_url() ), esc_html__( 'Redirects', 'simple-csv-redirects-with-cloudflare' ) ) );
 		}
 		return $links;
 	}
@@ -342,24 +342,24 @@ final class RFCF_Admin {
 			return;
 		}
 
-		$tabs = [ 'csv' => __( 'CSV Rules', 'simple-csv-cloudflare-redirects' ) ];
+		$tabs = [ 'csv' => __( 'CSV Rules', 'simple-csv-redirects-with-cloudflare' ) ];
 		if ( $cf ) {
-			$tabs['cloudflare'] = __( 'Cloudflare Rules', 'simple-csv-cloudflare-redirects' );
+			$tabs['cloudflare'] = __( 'Cloudflare Rules', 'simple-csv-redirects-with-cloudflare' );
 		}
-		$tabs['log']   = __( 'Change log', 'simple-csv-cloudflare-redirects' );
-		$tabs['setup'] = __( 'Setup', 'simple-csv-cloudflare-redirects' );
+		$tabs['log']   = __( 'Change log', 'simple-csv-redirects-with-cloudflare' );
+		$tabs['setup'] = __( 'Setup', 'simple-csv-redirects-with-cloudflare' );
 		if ( ! isset( $tabs[ $tab ] ) ) {
 			$tab = 'csv';
 		}
 		$csv_file = RFCF_CSV::current_file();
 		?>
 		<div class="wrap">
-			<h1 class="wp-heading-inline"><?php esc_html_e( 'Redirects', 'simple-csv-cloudflare-redirects' ); ?></h1>
+			<h1 class="wp-heading-inline"><?php esc_html_e( 'Redirects', 'simple-csv-redirects-with-cloudflare' ); ?></h1>
 			<?php if ( 'csv' === $tab ) : ?>
-				<a href="<?php echo esc_url( $this->page_url( [ 'action' => 'csv-add' ] ) ); ?>" class="page-title-action"><?php esc_html_e( 'Add New Rule', 'simple-csv-cloudflare-redirects' ); ?></a>
-				<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=rfcf_download_csv' ), 'rfcf_download_csv' ) ); ?>" class="page-title-action"><?php echo $csv_file ? esc_html__( 'Download CSV', 'simple-csv-cloudflare-redirects' ) : esc_html__( 'Download Template', 'simple-csv-cloudflare-redirects' ); ?></a>
+				<a href="<?php echo esc_url( $this->page_url( [ 'action' => 'csv-add' ] ) ); ?>" class="page-title-action"><?php esc_html_e( 'Add New Rule', 'simple-csv-redirects-with-cloudflare' ); ?></a>
+				<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=rfcf_download_csv' ), 'rfcf_download_csv' ) ); ?>" class="page-title-action"><?php echo $csv_file ? esc_html__( 'Download CSV', 'simple-csv-redirects-with-cloudflare' ) : esc_html__( 'Download Template', 'simple-csv-redirects-with-cloudflare' ); ?></a>
 			<?php elseif ( 'cloudflare' === $tab && $cf_ready ) : ?>
-				<a href="<?php echo esc_url( $this->page_url( [ 'action' => 'add', 'zone' => $this->current_zone() ] ) ); ?>" class="page-title-action"><?php esc_html_e( 'Add New Rule', 'simple-csv-cloudflare-redirects' ); ?></a>
+				<a href="<?php echo esc_url( $this->page_url( [ 'action' => 'add', 'zone' => $this->current_zone() ] ) ); ?>" class="page-title-action"><?php esc_html_e( 'Add New Rule', 'simple-csv-redirects-with-cloudflare' ); ?></a>
 			<?php endif; ?>
 			<hr class="wp-header-end">
 			<?php
@@ -369,7 +369,7 @@ final class RFCF_Admin {
 			}
 			?>
 
-			<nav class="nav-tab-wrapper" aria-label="<?php esc_attr_e( 'Secondary menu', 'simple-csv-cloudflare-redirects' ); ?>">
+			<nav class="nav-tab-wrapper" aria-label="<?php esc_attr_e( 'Secondary menu', 'simple-csv-redirects-with-cloudflare' ); ?>">
 				<?php foreach ( $tabs as $key => $label ) : ?>
 					<a href="<?php echo esc_url( $this->page_url( 'csv' === $key ? [] : [ 'tab' => $key ] ) ); ?>" class="nav-tab<?php echo $key === $tab ? ' nav-tab-active' : ''; ?>"<?php echo $key === $tab ? ' aria-current="page"' : ''; ?>><?php echo esc_html( $label ); ?></a>
 				<?php endforeach; ?>
@@ -405,16 +405,16 @@ final class RFCF_Admin {
 				esc_html(
 					sprintf(
 						/* translators: 1: number of rules, 2: file name, 3: date */
-						_n( '%1$d rule in %2$s, last changed %3$s.', '%1$d rules in %2$s, last changed %3$s.', $count, 'simple-csv-cloudflare-redirects' ),
+						_n( '%1$d rule in %2$s, last changed %3$s.', '%1$d rules in %2$s, last changed %3$s.', $count, 'simple-csv-redirects-with-cloudflare' ),
 						$count,
 						$csv['file'],
 						wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), (int) filemtime( $file ) )
 					)
 				),
-				esc_html__( 'WordPress checks enabled rules from top to bottom and applies the first one that matches.', 'simple-csv-cloudflare-redirects' )
+				esc_html__( 'WordPress checks enabled rules from top to bottom and applies the first one that matches.', 'simple-csv-redirects-with-cloudflare' )
 			);
 		} else {
-			echo '<p>' . esc_html__( 'No CSV rules yet. Add rules here, or download the template, fill it in with a spreadsheet app and upload it below.', 'simple-csv-cloudflare-redirects' ) . '</p>';
+			echo '<p>' . esc_html__( 'No CSV rules yet. Add rules here, or download the template, fill it in with a spreadsheet app and upload it below.', 'simple-csv-redirects-with-cloudflare' ) . '</p>';
 		}
 
 		rfcf_load_list_tables();
@@ -425,21 +425,21 @@ final class RFCF_Admin {
 			<input type="hidden" name="page" value="<?php echo esc_attr( self::SLUG ); ?>">
 			<?php $table->display(); ?>
 		</form>
-		<h2><?php esc_html_e( 'Upload CSV', 'simple-csv-cloudflare-redirects' ); ?></h2>
-		<p><?php esc_html_e( 'Uploading replaces all CSV rules with the file’s contents. The file is checked first; if any row has a problem, nothing changes. Download the CSV first if you want a copy of the current rules.', 'simple-csv-cloudflare-redirects' ); ?></p>
+		<h2><?php esc_html_e( 'Upload CSV', 'simple-csv-redirects-with-cloudflare' ); ?></h2>
+		<p><?php esc_html_e( 'Uploading replaces all CSV rules with the file’s contents. The file is checked first; if any row has a problem, nothing changes. Download the CSV first if you want a copy of the current rules.', 'simple-csv-redirects-with-cloudflare' ); ?></p>
 		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" enctype="multipart/form-data">
 			<input type="hidden" name="action" value="rfcf_upload_csv">
 			<?php wp_nonce_field( 'rfcf_upload_csv' ); ?>
 			<table class="form-table" role="presentation">
 				<tr>
-					<th scope="row"><label for="rfcf-csv"><?php esc_html_e( 'CSV file', 'simple-csv-cloudflare-redirects' ); ?></label></th>
+					<th scope="row"><label for="rfcf-csv"><?php esc_html_e( 'CSV file', 'simple-csv-redirects-with-cloudflare' ); ?></label></th>
 					<td>
 						<input type="file" id="rfcf-csv" name="csv" accept=".csv,text/csv" required>
-						<p class="description"><?php esc_html_e( 'Columns: description, source, target, status, preserve_query_string, enabled. Only source and target are required.', 'simple-csv-cloudflare-redirects' ); ?></p>
+						<p class="description"><?php esc_html_e( 'Columns: description, source, target, status, preserve_query_string, enabled. Only source and target are required.', 'simple-csv-redirects-with-cloudflare' ); ?></p>
 					</td>
 				</tr>
 			</table>
-			<?php submit_button( __( 'Upload CSV', 'simple-csv-cloudflare-redirects' ) ); ?>
+			<?php submit_button( __( 'Upload CSV', 'simple-csv-redirects-with-cloudflare' ) ); ?>
 		</form>
 		<?php
 	}
@@ -485,7 +485,7 @@ final class RFCF_Admin {
 
 		if ( $editing ) {
 			if ( ! isset( $csv['rows'][ $n - 1 ] ) ) {
-				$error = __( 'That CSV rule no longer exists.', 'simple-csv-cloudflare-redirects' );
+				$error = __( 'That CSV rule no longer exists.', 'simple-csv-redirects-with-cloudflare' );
 			} else {
 				$form = array_merge( $form, $csv['rows'][ $n - 1 ], [ 'row' => $n ] );
 			}
@@ -500,12 +500,12 @@ final class RFCF_Admin {
 		}
 		?>
 		<div class="wrap">
-			<h1><?php echo $editing ? esc_html__( 'Edit CSV Rule', 'simple-csv-cloudflare-redirects' ) : esc_html__( 'Add CSV Rule', 'simple-csv-cloudflare-redirects' ); ?></h1>
+			<h1><?php echo $editing ? esc_html__( 'Edit CSV Rule', 'simple-csv-redirects-with-cloudflare' ) : esc_html__( 'Add CSV Rule', 'simple-csv-redirects-with-cloudflare' ); ?></h1>
 			<?php $this->render_notices(); ?>
 
 			<?php if ( $error ) : ?>
 				<?php wp_admin_notice( esc_html( $error ), [ 'type' => 'error' ] ); ?>
-				<p><a href="<?php echo esc_url( $this->page_url() ); ?>">&larr; <?php esc_html_e( 'Back to Redirects', 'simple-csv-cloudflare-redirects' ); ?></a></p>
+				<p><a href="<?php echo esc_url( $this->page_url() ); ?>">&larr; <?php esc_html_e( 'Back to Redirects', 'simple-csv-redirects-with-cloudflare' ); ?></a></p>
 			</div>
 				<?php
 				return;
@@ -520,62 +520,62 @@ final class RFCF_Admin {
 
 				<table class="form-table" role="presentation">
 					<tr>
-						<th scope="row"><label for="rfcf-csv-desc"><?php esc_html_e( 'Description', 'simple-csv-cloudflare-redirects' ); ?></label></th>
+						<th scope="row"><label for="rfcf-csv-desc"><?php esc_html_e( 'Description', 'simple-csv-redirects-with-cloudflare' ); ?></label></th>
 						<td><input type="text" id="rfcf-csv-desc" name="description" class="regular-text" value="<?php echo esc_attr( $form['description'] ); ?>"></td>
 					</tr>
 					<tr>
-						<th scope="row"><label for="rfcf-csv-src"><?php esc_html_e( 'Source path', 'simple-csv-cloudflare-redirects' ); ?></label></th>
+						<th scope="row"><label for="rfcf-csv-src"><?php esc_html_e( 'Source path', 'simple-csv-redirects-with-cloudflare' ); ?></label></th>
 						<td>
 							<input type="text" id="rfcf-csv-src" name="source" class="large-text code" value="<?php echo esc_attr( $form['source'] ); ?>" required>
-							<p class="description"><?php esc_html_e( 'A path on this site starting with /, for example /old/*. Use * as a wildcard. Matching ignores letter case, trailing slashes and the query string.', 'simple-csv-cloudflare-redirects' ); ?></p>
+							<p class="description"><?php esc_html_e( 'A path on this site starting with /, for example /old/*. Use * as a wildcard. Matching ignores letter case, trailing slashes and the query string.', 'simple-csv-redirects-with-cloudflare' ); ?></p>
 						</td>
 					</tr>
 					<tr>
-						<th scope="row"><label for="rfcf-csv-tgt"><?php esc_html_e( 'Redirect to', 'simple-csv-cloudflare-redirects' ); ?></label></th>
+						<th scope="row"><label for="rfcf-csv-tgt"><?php esc_html_e( 'Redirect to', 'simple-csv-redirects-with-cloudflare' ); ?></label></th>
 						<td>
 							<input type="text" id="rfcf-csv-tgt" name="target" class="large-text code" value="<?php echo esc_attr( $form['target'] ); ?>" required>
-							<p class="description"><?php esc_html_e( 'A path on this site or a full URL, for example /new/${1} or https://example.org/new/${1}. ${1}, ${2}… insert what each * matched.', 'simple-csv-cloudflare-redirects' ); ?></p>
+							<p class="description"><?php esc_html_e( 'A path on this site or a full URL, for example /new/${1} or https://example.org/new/${1}. ${1}, ${2}… insert what each * matched.', 'simple-csv-redirects-with-cloudflare' ); ?></p>
 						</td>
 					</tr>
 					<tr>
-						<th scope="row"><label for="rfcf-csv-status"><?php esc_html_e( 'Status code', 'simple-csv-cloudflare-redirects' ); ?></label></th>
+						<th scope="row"><label for="rfcf-csv-status"><?php esc_html_e( 'Status code', 'simple-csv-redirects-with-cloudflare' ); ?></label></th>
 						<td>
 							<select id="rfcf-csv-status" name="status">
 								<?php foreach ( RFCF_CSV::STATUSES as $code ) : ?>
 									<option value="<?php echo (int) $code; ?>" <?php selected( (int) $form['status'], $code ); ?>><?php echo (int) $code; ?></option>
 								<?php endforeach; ?>
 							</select>
-							<p class="description"><?php esc_html_e( '301 permanent, 302 temporary. 307 and 308 keep the request method.', 'simple-csv-cloudflare-redirects' ); ?></p>
+							<p class="description"><?php esc_html_e( '301 permanent, 302 temporary. 307 and 308 keep the request method.', 'simple-csv-redirects-with-cloudflare' ); ?></p>
 						</td>
 					</tr>
 					<tr>
-						<th scope="row"><?php esc_html_e( 'Options', 'simple-csv-cloudflare-redirects' ); ?></th>
+						<th scope="row"><?php esc_html_e( 'Options', 'simple-csv-redirects-with-cloudflare' ); ?></th>
 						<td>
 							<fieldset>
-								<legend class="screen-reader-text"><span><?php esc_html_e( 'Options', 'simple-csv-cloudflare-redirects' ); ?></span></legend>
-								<label><input type="checkbox" name="preserve_query_string" value="1" <?php checked( $form['preserve_query_string'] ); ?>> <?php esc_html_e( 'Preserve query string', 'simple-csv-cloudflare-redirects' ); ?></label><br>
-								<label><input type="checkbox" name="enabled" value="1" <?php checked( $form['enabled'] ); ?>> <?php esc_html_e( 'Enabled', 'simple-csv-cloudflare-redirects' ); ?></label>
+								<legend class="screen-reader-text"><span><?php esc_html_e( 'Options', 'simple-csv-redirects-with-cloudflare' ); ?></span></legend>
+								<label><input type="checkbox" name="preserve_query_string" value="1" <?php checked( $form['preserve_query_string'] ); ?>> <?php esc_html_e( 'Preserve query string', 'simple-csv-redirects-with-cloudflare' ); ?></label><br>
+								<label><input type="checkbox" name="enabled" value="1" <?php checked( $form['enabled'] ); ?>> <?php esc_html_e( 'Enabled', 'simple-csv-redirects-with-cloudflare' ); ?></label>
 							</fieldset>
 						</td>
 					</tr>
 					<?php if ( ! $editing ) : ?>
 						<tr>
-							<th scope="row"><?php esc_html_e( 'Position', 'simple-csv-cloudflare-redirects' ); ?></th>
+							<th scope="row"><?php esc_html_e( 'Position', 'simple-csv-redirects-with-cloudflare' ); ?></th>
 							<td>
 								<fieldset>
-									<legend class="screen-reader-text"><span><?php esc_html_e( 'Position', 'simple-csv-cloudflare-redirects' ); ?></span></legend>
-									<label><input type="radio" name="position" value="bottom" <?php checked( $form['position'], 'bottom' ); ?>> <?php esc_html_e( 'Last (checked after existing rules)', 'simple-csv-cloudflare-redirects' ); ?></label><br>
-									<label><input type="radio" name="position" value="top" <?php checked( $form['position'], 'top' ); ?>> <?php esc_html_e( 'First (checked before existing rules)', 'simple-csv-cloudflare-redirects' ); ?></label>
+									<legend class="screen-reader-text"><span><?php esc_html_e( 'Position', 'simple-csv-redirects-with-cloudflare' ); ?></span></legend>
+									<label><input type="radio" name="position" value="bottom" <?php checked( $form['position'], 'bottom' ); ?>> <?php esc_html_e( 'Last (checked after existing rules)', 'simple-csv-redirects-with-cloudflare' ); ?></label><br>
+									<label><input type="radio" name="position" value="top" <?php checked( $form['position'], 'top' ); ?>> <?php esc_html_e( 'First (checked before existing rules)', 'simple-csv-redirects-with-cloudflare' ); ?></label>
 								</fieldset>
-								<p class="description"><?php esc_html_e( 'Put specific rules above broad wildcard rules. You can move rules later from the list.', 'simple-csv-cloudflare-redirects' ); ?></p>
+								<p class="description"><?php esc_html_e( 'Put specific rules above broad wildcard rules. You can move rules later from the list.', 'simple-csv-redirects-with-cloudflare' ); ?></p>
 							</td>
 						</tr>
 					<?php endif; ?>
 				</table>
 
 				<p class="submit">
-					<?php submit_button( $editing ? __( 'Update Rule', 'simple-csv-cloudflare-redirects' ) : __( 'Add Rule', 'simple-csv-cloudflare-redirects' ), 'primary', 'submit', false ); ?>
-					<a href="<?php echo esc_url( $this->page_url() ); ?>" class="button"><?php esc_html_e( 'Cancel', 'simple-csv-cloudflare-redirects' ); ?></a>
+					<?php submit_button( $editing ? __( 'Update Rule', 'simple-csv-redirects-with-cloudflare' ) : __( 'Add Rule', 'simple-csv-redirects-with-cloudflare' ), 'primary', 'submit', false ); ?>
+					<a href="<?php echo esc_url( $this->page_url() ); ?>" class="button"><?php esc_html_e( 'Cancel', 'simple-csv-redirects-with-cloudflare' ); ?></a>
 				</p>
 			</form>
 		</div>
@@ -586,7 +586,7 @@ final class RFCF_Admin {
 	private function csv_check_fresh( $posted_file, $back ) {
 		$current = (string) RFCF_CSV::current()['file'];
 		if ( sanitize_file_name( (string) $posted_file ) !== $current ) {
-			$this->notice( 'error', __( 'The CSV changed since you opened this page, so nothing was saved. Check the list and try again.', 'simple-csv-cloudflare-redirects' ) );
+			$this->notice( 'error', __( 'The CSV changed since you opened this page, so nothing was saved. Check the list and try again.', 'simple-csv-redirects-with-cloudflare' ) );
 			wp_safe_redirect( $back );
 			exit;
 		}
@@ -633,7 +633,7 @@ final class RFCF_Admin {
 
 		if ( $n ) {
 			if ( ! isset( $rows[ $n - 1 ] ) ) {
-				$this->notice( 'error', __( 'That CSV rule no longer exists.', 'simple-csv-cloudflare-redirects' ) );
+				$this->notice( 'error', __( 'That CSV rule no longer exists.', 'simple-csv-redirects-with-cloudflare' ) );
 				wp_safe_redirect( $list );
 				exit;
 			}
@@ -641,10 +641,10 @@ final class RFCF_Admin {
 			$rows[ $n - 1 ] = $row;
 			$this->csv_save_or_fail( $rows, $back );
 			$this->log( 'updated', 'CSV', $this->csv_label( $row ), RFCF_CSV::summarize( $before ), RFCF_CSV::summarize( $row ) );
-			$this->notice( 'success', __( 'CSV rule updated.', 'simple-csv-cloudflare-redirects' ) );
+			$this->notice( 'success', __( 'CSV rule updated.', 'simple-csv-redirects-with-cloudflare' ) );
 		} else {
 			if ( count( $rows ) >= RFCF_CSV::MAX_ROWS ) {
-				$this->notice( 'error', __( 'The CSV already has the maximum number of rules.', 'simple-csv-cloudflare-redirects' ) );
+				$this->notice( 'error', __( 'The CSV already has the maximum number of rules.', 'simple-csv-redirects-with-cloudflare' ) );
 				wp_safe_redirect( $list );
 				exit;
 			}
@@ -655,7 +655,7 @@ final class RFCF_Admin {
 			}
 			$this->csv_save_or_fail( $rows, $back );
 			$this->log( 'added', 'CSV', $this->csv_label( $row ), '', RFCF_CSV::summarize( $row ) );
-			$this->notice( 'success', __( 'CSV rule added.', 'simple-csv-cloudflare-redirects' ) );
+			$this->notice( 'success', __( 'CSV rule added.', 'simple-csv-redirects-with-cloudflare' ) );
 		}
 		wp_safe_redirect( $list );
 		exit;
@@ -671,7 +671,7 @@ final class RFCF_Admin {
 
 		$rows = RFCF_CSV::current()['rows'];
 		if ( ! isset( $rows[ $n - 1 ] ) ) {
-			$this->notice( 'error', __( 'That CSV rule no longer exists.', 'simple-csv-cloudflare-redirects' ) );
+			$this->notice( 'error', __( 'That CSV rule no longer exists.', 'simple-csv-redirects-with-cloudflare' ) );
 			wp_safe_redirect( $list );
 			exit;
 		}
@@ -679,7 +679,7 @@ final class RFCF_Admin {
 	}
 
 	private function csv_label( array $row ) {
-		return '' !== $row['description'] ? $row['description'] : __( '(no description)', 'simple-csv-cloudflare-redirects' );
+		return '' !== $row['description'] ? $row['description'] : __( '(no description)', 'simple-csv-redirects-with-cloudflare' );
 	}
 
 	public function handle_csv_toggle() {
@@ -689,7 +689,7 @@ final class RFCF_Admin {
 
 		$on = $rows[ $i ]['enabled'];
 		$this->log( $on ? 'enabled' : 'disabled', 'CSV', $this->csv_label( $rows[ $i ] ), '', RFCF_CSV::summarize( $rows[ $i ] ) );
-		$this->notice( 'success', $on ? __( 'CSV rule enabled.', 'simple-csv-cloudflare-redirects' ) : __( 'CSV rule disabled.', 'simple-csv-cloudflare-redirects' ) );
+		$this->notice( 'success', $on ? __( 'CSV rule enabled.', 'simple-csv-redirects-with-cloudflare' ) : __( 'CSV rule disabled.', 'simple-csv-redirects-with-cloudflare' ) );
 		wp_safe_redirect( $this->page_url() );
 		exit;
 	}
@@ -701,7 +701,7 @@ final class RFCF_Admin {
 		$this->csv_save_or_fail( $rows, $this->page_url() );
 
 		$this->log( 'deleted', 'CSV', $this->csv_label( $gone ), RFCF_CSV::summarize( $gone ) );
-		$this->notice( 'success', __( 'CSV rule deleted.', 'simple-csv-cloudflare-redirects' ) );
+		$this->notice( 'success', __( 'CSV rule deleted.', 'simple-csv-redirects-with-cloudflare' ) );
 		wp_safe_redirect( $this->page_url() );
 		exit;
 	}
@@ -718,9 +718,9 @@ final class RFCF_Admin {
 			$this->csv_save_or_fail( $rows, $this->page_url() );
 
 			/* translators: %d: rule position */
-			$pos = __( 'Position %d', 'simple-csv-cloudflare-redirects' );
+			$pos = __( 'Position %d', 'simple-csv-redirects-with-cloudflare' );
 			$this->log( 'moved', 'CSV', $this->csv_label( $tmp ), sprintf( $pos, $i + 1 ), sprintf( $pos, $j + 1 ) );
-			$this->notice( 'success', __( 'CSV rule moved.', 'simple-csv-cloudflare-redirects' ) );
+			$this->notice( 'success', __( 'CSV rule moved.', 'simple-csv-redirects-with-cloudflare' ) );
 		}
 		wp_safe_redirect( $this->page_url() );
 		exit;
@@ -733,17 +733,17 @@ final class RFCF_Admin {
 
 		$f = isset( $_FILES['csv'] ) && is_array( $_FILES['csv'] ) ? $_FILES['csv'] : null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- an upload array; each part is validated below.
 		if ( ! $f || ! isset( $f['error'] ) || UPLOAD_ERR_OK !== (int) $f['error'] || ! is_uploaded_file( $f['tmp_name'] ) ) {
-			$this->notice( 'error', __( 'The upload failed. Choose a CSV file and try again.', 'simple-csv-cloudflare-redirects' ) );
+			$this->notice( 'error', __( 'The upload failed. Choose a CSV file and try again.', 'simple-csv-redirects-with-cloudflare' ) );
 			wp_safe_redirect( $back );
 			exit;
 		}
 		if ( 'csv' !== strtolower( pathinfo( (string) $f['name'], PATHINFO_EXTENSION ) ) ) {
-			$this->notice( 'error', __( 'Only .csv files can be uploaded.', 'simple-csv-cloudflare-redirects' ) );
+			$this->notice( 'error', __( 'Only .csv files can be uploaded.', 'simple-csv-redirects-with-cloudflare' ) );
 			wp_safe_redirect( $back );
 			exit;
 		}
 		if ( (int) $f['size'] > RFCF_CSV::MAX_BYTES ) {
-			$this->notice( 'error', __( 'The file is larger than 2 MB.', 'simple-csv-cloudflare-redirects' ) );
+			$this->notice( 'error', __( 'The file is larger than 2 MB.', 'simple-csv-redirects-with-cloudflare' ) );
 			wp_safe_redirect( $back );
 			exit;
 		}
@@ -753,10 +753,10 @@ final class RFCF_Admin {
 		if ( $parsed['errors'] ) {
 			$shown = array_slice( $parsed['errors'], 0, 10 );
 			$more  = count( $parsed['errors'] ) - count( $shown );
-			$msg   = __( 'The CSV was not uploaded. Fix these problems and try again:', 'simple-csv-cloudflare-redirects' ) . ' ' . implode( ' ', $shown );
+			$msg   = __( 'The CSV was not uploaded. Fix these problems and try again:', 'simple-csv-redirects-with-cloudflare' ) . ' ' . implode( ' ', $shown );
 			if ( $more > 0 ) {
 				/* translators: %d: number of further problems */
-				$msg .= ' ' . sprintf( _n( '(and %d more problem)', '(and %d more problems)', $more, 'simple-csv-cloudflare-redirects' ), $more );
+				$msg .= ' ' . sprintf( _n( '(and %d more problem)', '(and %d more problems)', $more, 'simple-csv-redirects-with-cloudflare' ), $more );
 			}
 			$this->notice( 'error', $msg );
 			wp_safe_redirect( $back );
@@ -775,7 +775,7 @@ final class RFCF_Admin {
 
 		$count = count( $parsed['rows'] );
 		/* translators: 1: file name, 2: number of rules */
-		$fmt = __( '%1$s (%2$d rules)', 'simple-csv-cloudflare-redirects' );
+		$fmt = __( '%1$s (%2$d rules)', 'simple-csv-redirects-with-cloudflare' );
 		$this->log(
 			'csv',
 			'CSV',
@@ -784,7 +784,7 @@ final class RFCF_Admin {
 			sprintf( $fmt, basename( $new ), $count )
 		);
 		/* translators: %d: number of redirects */
-		$this->notice( 'success', sprintf( _n( 'CSV uploaded with %d rule.', 'CSV uploaded with %d rules.', $count, 'simple-csv-cloudflare-redirects' ), $count ) );
+		$this->notice( 'success', sprintf( _n( 'CSV uploaded with %d rule.', 'CSV uploaded with %d rules.', $count, 'simple-csv-redirects-with-cloudflare' ), $count ) );
 		wp_safe_redirect( $back );
 		exit;
 	}
@@ -831,54 +831,54 @@ final class RFCF_Admin {
 
 		$csv_dir = ltrim( str_replace( wp_normalize_path( ABSPATH ), '', wp_normalize_path( RFCF_CSV::dir() ) ), '/' ) . '/';
 		?>
-		<h2><?php esc_html_e( 'CSV Rules', 'simple-csv-cloudflare-redirects' ); ?></h2>
-		<p><?php esc_html_e( 'CSV rules work without any setup. Add and edit them on the CSV Rules tab, or download the CSV, edit it in a spreadsheet app and upload it again.', 'simple-csv-cloudflare-redirects' ); ?></p>
+		<h2><?php esc_html_e( 'CSV Rules', 'simple-csv-redirects-with-cloudflare' ); ?></h2>
+		<p><?php esc_html_e( 'CSV rules work without any setup. Add and edit them on the CSV Rules tab, or download the CSV, edit it in a spreadsheet app and upload it again.', 'simple-csv-redirects-with-cloudflare' ); ?></p>
 		<pre><code><?php echo esc_html( RFCF_CSV::TEMPLATE ); ?></code></pre>
 		<ul class="ul-disc">
-			<li><?php esc_html_e( 'description is a note for people; it isn’t used for matching.', 'simple-csv-cloudflare-redirects' ); ?></li>
-			<li><?php esc_html_e( 'source is a path on this site, starting with /. Use * as a wildcard. Letter case, trailing slashes and the query string are ignored when matching.', 'simple-csv-cloudflare-redirects' ); ?></li>
-			<li><?php esc_html_e( 'target is a path on this site or a full URL. ${1}, ${2}… insert what each * matched.', 'simple-csv-cloudflare-redirects' ); ?></li>
-			<li><?php esc_html_e( 'status is 301 (default), 302, 303, 307 or 308.', 'simple-csv-cloudflare-redirects' ); ?></li>
-			<li><?php esc_html_e( 'preserve_query_string is yes or no (default no). Yes passes the visitor’s query string on to the target.', 'simple-csv-cloudflare-redirects' ); ?></li>
-			<li><?php esc_html_e( 'enabled is yes or no (default yes). Disabled rules stay in the file but are skipped.', 'simple-csv-cloudflare-redirects' ); ?></li>
-			<li><?php esc_html_e( 'Only source and target are required. Rules are checked from top to bottom and the first match wins, even when a page exists at that path.', 'simple-csv-cloudflare-redirects' ); ?></li>
+			<li><?php esc_html_e( 'description is a note for people; it isn’t used for matching.', 'simple-csv-redirects-with-cloudflare' ); ?></li>
+			<li><?php esc_html_e( 'source is a path on this site, starting with /. Use * as a wildcard. Letter case, trailing slashes and the query string are ignored when matching.', 'simple-csv-redirects-with-cloudflare' ); ?></li>
+			<li><?php esc_html_e( 'target is a path on this site or a full URL. ${1}, ${2}… insert what each * matched.', 'simple-csv-redirects-with-cloudflare' ); ?></li>
+			<li><?php esc_html_e( 'status is 301 (default), 302, 303, 307 or 308.', 'simple-csv-redirects-with-cloudflare' ); ?></li>
+			<li><?php esc_html_e( 'preserve_query_string is yes or no (default no). Yes passes the visitor’s query string on to the target.', 'simple-csv-redirects-with-cloudflare' ); ?></li>
+			<li><?php esc_html_e( 'enabled is yes or no (default yes). Disabled rules stay in the file but are skipped.', 'simple-csv-redirects-with-cloudflare' ); ?></li>
+			<li><?php esc_html_e( 'Only source and target are required. Rules are checked from top to bottom and the first match wins, even when a page exists at that path.', 'simple-csv-redirects-with-cloudflare' ); ?></li>
 			<li>
 				<?php
 				/* translators: %s: folder path */
-				echo esc_html( sprintf( __( 'The file is kept in %s. Every change saves a new file named with the time of the change and removes the old one.', 'simple-csv-cloudflare-redirects' ), $csv_dir ) );
+				echo esc_html( sprintf( __( 'The file is kept in %s. Every change saves a new file named with the time of the change and removes the old one.', 'simple-csv-redirects-with-cloudflare' ), $csv_dir ) );
 				?>
 			</li>
-			<li><?php esc_html_e( 'CSV rules run inside WordPress, so they don’t apply to pages served from a cache or to files such as PDFs. Use Cloudflare Rules for those.', 'simple-csv-cloudflare-redirects' ); ?></li>
+			<li><?php esc_html_e( 'CSV rules run inside WordPress, so they don’t apply to pages served from a cache or to files such as PDFs. Use Cloudflare Rules for those.', 'simple-csv-redirects-with-cloudflare' ); ?></li>
 		</ul>
 
-		<h2><?php esc_html_e( 'Cloudflare Rules (optional)', 'simple-csv-cloudflare-redirects' ); ?></h2>
+		<h2><?php esc_html_e( 'Cloudflare Rules (optional)', 'simple-csv-redirects-with-cloudflare' ); ?></h2>
 		<?php if ( ! RFCF_Config::cloudflare() ) : ?>
-			<?php wp_admin_notice( esc_html__( 'Cloudflare Rules are not set up for this site yet. Follow the steps below, then reload this page.', 'simple-csv-cloudflare-redirects' ), [ 'type' => 'warning', 'additional_classes' => [ 'inline' ] ] ); ?>
+			<?php wp_admin_notice( esc_html__( 'Cloudflare Rules are not set up for this site yet. Follow the steps below, then reload this page.', 'simple-csv-redirects-with-cloudflare' ), [ 'type' => 'warning', 'additional_classes' => [ 'inline' ] ] ); ?>
 		<?php endif; ?>
-		<p><?php esc_html_e( 'Cloudflare Rules redirect at Cloudflare’s edge, before a request reaches this server. The Free plan allows 10 rules per domain.', 'simple-csv-cloudflare-redirects' ); ?></p>
+		<p><?php esc_html_e( 'Cloudflare Rules redirect at Cloudflare’s edge, before a request reaches this server. The Free plan allows 10 rules per domain.', 'simple-csv-redirects-with-cloudflare' ); ?></p>
 		<ol>
-			<li><?php esc_html_e( 'Log in to the Cloudflare dashboard and open My Profile.', 'simple-csv-cloudflare-redirects' ); ?></li>
-			<li><?php esc_html_e( 'Under API credentials, open API Tokens.', 'simple-csv-cloudflare-redirects' ); ?></li>
-			<li><?php esc_html_e( 'Select Create Token, then Get started next to Create Custom Token.', 'simple-csv-cloudflare-redirects' ); ?></li>
-			<li><?php esc_html_e( 'Give the token a name, for example “WordPress redirects – your site name”.', 'simple-csv-cloudflare-redirects' ); ?></li>
-			<li><?php esc_html_e( 'Under Permissions, add two rows: Zone → Single Redirect → Edit, and Zone → Zone → Read.', 'simple-csv-cloudflare-redirects' ); ?></li>
-			<li><?php esc_html_e( 'Under Zone Resources, choose Include → Specific zone and pick each domain this site should manage. Add a row per domain.', 'simple-csv-cloudflare-redirects' ); ?></li>
-			<li><?php esc_html_e( 'Optional: under Client IP Address Filtering, allow only this web server’s IP address.', 'simple-csv-cloudflare-redirects' ); ?></li>
-			<li><?php esc_html_e( 'Select Continue to summary, then Create Token. Copy the token now; Cloudflare shows it only once. It starts with cfut_.', 'simple-csv-cloudflare-redirects' ); ?></li>
-			<li><?php esc_html_e( 'Open wp-config.php and paste the following above the line that says “That’s all, stop editing!”:', 'simple-csv-cloudflare-redirects' ); ?></li>
+			<li><?php esc_html_e( 'Log in to the Cloudflare dashboard and open My Profile.', 'simple-csv-redirects-with-cloudflare' ); ?></li>
+			<li><?php esc_html_e( 'Under API credentials, open API Tokens.', 'simple-csv-redirects-with-cloudflare' ); ?></li>
+			<li><?php esc_html_e( 'Select Create Token, then Get started next to Create Custom Token.', 'simple-csv-redirects-with-cloudflare' ); ?></li>
+			<li><?php esc_html_e( 'Give the token a name, for example “WordPress redirects – your site name”.', 'simple-csv-redirects-with-cloudflare' ); ?></li>
+			<li><?php esc_html_e( 'Under Permissions, add two rows: Zone → Single Redirect → Edit, and Zone → Zone → Read.', 'simple-csv-redirects-with-cloudflare' ); ?></li>
+			<li><?php esc_html_e( 'Under Zone Resources, choose Include → Specific zone and pick each domain this site should manage. Add a row per domain.', 'simple-csv-redirects-with-cloudflare' ); ?></li>
+			<li><?php esc_html_e( 'Optional: under Client IP Address Filtering, allow only this web server’s IP address.', 'simple-csv-redirects-with-cloudflare' ); ?></li>
+			<li><?php esc_html_e( 'Select Continue to summary, then Create Token. Copy the token now; Cloudflare shows it only once. It starts with cfut_.', 'simple-csv-redirects-with-cloudflare' ); ?></li>
+			<li><?php esc_html_e( 'Open wp-config.php and paste the following above the line that says “That’s all, stop editing!”:', 'simple-csv-redirects-with-cloudflare' ); ?></li>
 		</ol>
 		<pre><code><?php echo esc_html( is_multisite() ? $multi : $single ); ?></code></pre>
 		<ol start="10">
-			<li><?php esc_html_e( 'Replace the token and domains with your own. Domains are the names of the zones in Cloudflare (or their 32-character zone IDs).', 'simple-csv-cloudflare-redirects' ); ?></li>
-			<li><?php esc_html_e( 'Save the file and reload this page.', 'simple-csv-cloudflare-redirects' ); ?></li>
+			<li><?php esc_html_e( 'Replace the token and domains with your own. Domains are the names of the zones in Cloudflare (or their 32-character zone IDs).', 'simple-csv-redirects-with-cloudflare' ); ?></li>
+			<li><?php esc_html_e( 'Save the file and reload this page.', 'simple-csv-redirects-with-cloudflare' ); ?></li>
 		</ol>
 
-		<h2><?php esc_html_e( 'Good to know', 'simple-csv-cloudflare-redirects' ); ?></h2>
+		<h2><?php esc_html_e( 'Good to know', 'simple-csv-redirects-with-cloudflare' ); ?></h2>
 		<ul class="ul-disc">
-			<li><?php esc_html_e( 'Administrators and editors can manage redirects by default. Add \'roles\' => [ \'administrator\' ] to RFCF_CONFIG to change that.', 'simple-csv-cloudflare-redirects' ); ?></li>
-			<li><?php esc_html_e( 'An account API token (Manage Account → Account API Tokens, starts with cfat_) also works, with the same permissions.', 'simple-csv-cloudflare-redirects' ); ?></li>
+			<li><?php esc_html_e( 'Administrators and editors can manage redirects by default. Add \'roles\' => [ \'administrator\' ] to RFCF_CONFIG to change that.', 'simple-csv-redirects-with-cloudflare' ); ?></li>
+			<li><?php esc_html_e( 'An account API token (Manage Account → Account API Tokens, starts with cfat_) also works, with the same permissions.', 'simple-csv-redirects-with-cloudflare' ); ?></li>
 			<?php if ( is_multisite() ) : ?>
-				<li><?php esc_html_e( 'On multisite, the top-level settings apply to every site. An entry keyed by site ID replaces only the settings it lists for that site; false switches the plugin off for that site. Network super admins always have access.', 'simple-csv-cloudflare-redirects' ); ?></li>
+				<li><?php esc_html_e( 'On multisite, the top-level settings apply to every site. An entry keyed by site ID replaces only the settings it lists for that site; false switches the plugin off for that site. Network super admins always have access.', 'simple-csv-redirects-with-cloudflare' ); ?></li>
 			<?php endif; ?>
 		</ul>
 		<?php
@@ -890,7 +890,7 @@ final class RFCF_Admin {
 			return;
 		}
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_admin_notice( esc_html__( 'Some websites could not be loaded from Cloudflare. Ask an administrator to check the Redirects configuration.', 'simple-csv-cloudflare-redirects' ), [ 'type' => 'warning' ] );
+			wp_admin_notice( esc_html__( 'Some websites could not be loaded from Cloudflare. Ask an administrator to check the Redirects configuration.', 'simple-csv-redirects-with-cloudflare' ), [ 'type' => 'warning' ] );
 			return;
 		}
 		$items = '';
@@ -898,8 +898,8 @@ final class RFCF_Admin {
 			$items .= '<li>' . esc_html( $e ) . '</li>';
 		}
 		wp_admin_notice(
-			'<p>' . esc_html__( 'These domains in RFCF_CONFIG (wp-config.php) could not be loaded:', 'simple-csv-cloudflare-redirects' ) . '</p><ul>' . $items . '</ul>'
-			. '<p><a href="' . esc_url( $this->cf_url( [ 'refresh' => 1 ] ) ) . '">' . esc_html__( 'Try again', 'simple-csv-cloudflare-redirects' ) . '</a></p>',
+			'<p>' . esc_html__( 'These domains in RFCF_CONFIG (wp-config.php) could not be loaded:', 'simple-csv-redirects-with-cloudflare' ) . '</p><ul>' . $items . '</ul>'
+			. '<p><a href="' . esc_url( $this->cf_url( [ 'refresh' => 1 ] ) ) . '">' . esc_html__( 'Try again', 'simple-csv-redirects-with-cloudflare' ) . '</a></p>',
 			[ 'type' => 'warning', 'paragraph_wrap' => false ]
 		);
 	}
@@ -939,7 +939,7 @@ final class RFCF_Admin {
 			echo wp_kses_post( '<ul class="subsubsub">' . implode( ' |</li>', $links ) . '</li></ul><br class="clear">' );
 		} else {
 			/* translators: %s: domain */
-			echo '<p>' . esc_html( sprintf( __( 'Website: %s', 'simple-csv-cloudflare-redirects' ), $zones[ $zone ] ) ) . '</p>';
+			echo '<p>' . esc_html( sprintf( __( 'Website: %s', 'simple-csv-redirects-with-cloudflare' ), $zones[ $zone ] ) ) . '</p>';
 		}
 
 		$ep = $this->api()->get_entrypoint( $zone );
@@ -953,15 +953,15 @@ final class RFCF_Admin {
 
 		if ( $plan ) {
 			/* translators: 1: rules used, 2: rule limit, 3: Cloudflare plan name */
-			$usage = sprintf( __( '%1$d of %2$d redirect rules used (%3$s).', 'simple-csv-cloudflare-redirects' ), $count, $plan['limit'], $plan['plan'] );
+			$usage = sprintf( __( '%1$d of %2$d redirect rules used (%3$s).', 'simple-csv-redirects-with-cloudflare' ), $count, $plan['limit'], $plan['plan'] );
 		} else {
 			/* translators: %d: number of rules */
-			$usage = sprintf( _n( '%d redirect rule.', '%d redirect rules.', $count, 'simple-csv-cloudflare-redirects' ), $count );
+			$usage = sprintf( _n( '%d redirect rule.', '%d redirect rules.', $count, 'simple-csv-redirects-with-cloudflare' ), $count );
 		}
-		echo '<p>' . esc_html( $usage ) . ' ' . esc_html__( 'Cloudflare checks rules from top to bottom and applies the first one that matches.', 'simple-csv-cloudflare-redirects' ) . '</p>';
+		echo '<p>' . esc_html( $usage ) . ' ' . esc_html__( 'Cloudflare checks rules from top to bottom and applies the first one that matches.', 'simple-csv-redirects-with-cloudflare' ) . '</p>';
 
 		if ( $plan && $count >= $plan['limit'] ) {
-			wp_admin_notice( esc_html__( 'This website has reached its redirect rule limit. Delete or combine rules before adding new ones.', 'simple-csv-cloudflare-redirects' ), [ 'type' => 'warning', 'additional_classes' => [ 'inline' ] ] );
+			wp_admin_notice( esc_html__( 'This website has reached its redirect rule limit. Delete or combine rules before adding new ones.', 'simple-csv-redirects-with-cloudflare' ), [ 'type' => 'warning', 'additional_classes' => [ 'inline' ] ] );
 		}
 
 		rfcf_load_list_tables();
@@ -998,12 +998,12 @@ final class RFCF_Admin {
 		$simple  = 'simple' === $form['mode'];
 		?>
 		<div class="wrap">
-			<h1><?php echo $editing ? esc_html__( 'Edit Redirect Rule', 'simple-csv-cloudflare-redirects' ) : esc_html__( 'Add Redirect Rule', 'simple-csv-cloudflare-redirects' ); ?></h1>
+			<h1><?php echo $editing ? esc_html__( 'Edit Redirect Rule', 'simple-csv-redirects-with-cloudflare' ) : esc_html__( 'Add Redirect Rule', 'simple-csv-redirects-with-cloudflare' ); ?></h1>
 			<?php $this->render_notices(); ?>
 
 			<?php if ( $error ) : ?>
 				<?php wp_admin_notice( esc_html( $error ), [ 'type' => 'error' ] ); ?>
-				<p><a href="<?php echo esc_url( $this->cf_url( [ 'zone' => $zone ] ) ); ?>">&larr; <?php esc_html_e( 'Back to Redirects', 'simple-csv-cloudflare-redirects' ); ?></a></p>
+				<p><a href="<?php echo esc_url( $this->cf_url( [ 'zone' => $zone ] ) ); ?>">&larr; <?php esc_html_e( 'Back to Redirects', 'simple-csv-redirects-with-cloudflare' ); ?></a></p>
 			</div>
 				<?php
 				return;
@@ -1017,7 +1017,7 @@ final class RFCF_Admin {
 
 				<table class="form-table" role="presentation">
 					<tr>
-						<th scope="row"><label for="rfcf-zone"><?php esc_html_e( 'Website', 'simple-csv-cloudflare-redirects' ); ?></label></th>
+						<th scope="row"><label for="rfcf-zone"><?php esc_html_e( 'Website', 'simple-csv-redirects-with-cloudflare' ); ?></label></th>
 						<td>
 							<?php if ( $editing ) : ?>
 								<input type="hidden" name="zone" value="<?php echo esc_attr( $zone ); ?>">
@@ -1032,90 +1032,90 @@ final class RFCF_Admin {
 						</td>
 					</tr>
 					<tr>
-						<th scope="row"><label for="rfcf-desc"><?php esc_html_e( 'Description', 'simple-csv-cloudflare-redirects' ); ?></label></th>
+						<th scope="row"><label for="rfcf-desc"><?php esc_html_e( 'Description', 'simple-csv-redirects-with-cloudflare' ); ?></label></th>
 						<td><input type="text" id="rfcf-desc" name="description" class="regular-text" value="<?php echo esc_attr( $form['description'] ); ?>"></td>
 					</tr>
 					<tr>
-						<th scope="row"><?php esc_html_e( 'Rule type', 'simple-csv-cloudflare-redirects' ); ?></th>
+						<th scope="row"><?php esc_html_e( 'Rule type', 'simple-csv-redirects-with-cloudflare' ); ?></th>
 						<td>
 							<fieldset>
-								<legend class="screen-reader-text"><span><?php esc_html_e( 'Rule type', 'simple-csv-cloudflare-redirects' ); ?></span></legend>
-								<label><input type="radio" name="mode" value="simple" <?php checked( $simple ); ?>> <?php esc_html_e( 'URL pattern with wildcards', 'simple-csv-cloudflare-redirects' ); ?></label><br>
-								<label><input type="radio" name="mode" value="custom" <?php checked( ! $simple ); ?>> <?php esc_html_e( 'Custom expression', 'simple-csv-cloudflare-redirects' ); ?></label>
+								<legend class="screen-reader-text"><span><?php esc_html_e( 'Rule type', 'simple-csv-redirects-with-cloudflare' ); ?></span></legend>
+								<label><input type="radio" name="mode" value="simple" <?php checked( $simple ); ?>> <?php esc_html_e( 'URL pattern with wildcards', 'simple-csv-redirects-with-cloudflare' ); ?></label><br>
+								<label><input type="radio" name="mode" value="custom" <?php checked( ! $simple ); ?>> <?php esc_html_e( 'Custom expression', 'simple-csv-redirects-with-cloudflare' ); ?></label>
 							</fieldset>
 						</td>
 					</tr>
 					<tr class="rfcf-simple"<?php echo $simple ? '' : ' hidden'; ?>>
-						<th scope="row"><label for="rfcf-src"><?php esc_html_e( 'Request URL', 'simple-csv-cloudflare-redirects' ); ?></label></th>
+						<th scope="row"><label for="rfcf-src"><?php esc_html_e( 'Request URL', 'simple-csv-redirects-with-cloudflare' ); ?></label></th>
 						<td>
 							<input type="text" id="rfcf-src" name="source_url" class="large-text code" value="<?php echo esc_attr( $form['source_url'] ); ?>">
-							<p class="description"><?php esc_html_e( 'Full URL including https://, for example https://example.org/old/*. Use * as a wildcard. Matching includes the query string and ignores letter case.', 'simple-csv-cloudflare-redirects' ); ?></p>
+							<p class="description"><?php esc_html_e( 'Full URL including https://, for example https://example.org/old/*. Use * as a wildcard. Matching includes the query string and ignores letter case.', 'simple-csv-redirects-with-cloudflare' ); ?></p>
 						</td>
 					</tr>
 					<tr class="rfcf-simple"<?php echo $simple ? '' : ' hidden'; ?>>
-						<th scope="row"><label for="rfcf-tgt"><?php esc_html_e( 'Target URL', 'simple-csv-cloudflare-redirects' ); ?></label></th>
+						<th scope="row"><label for="rfcf-tgt"><?php esc_html_e( 'Target URL', 'simple-csv-redirects-with-cloudflare' ); ?></label></th>
 						<td>
 							<input type="text" id="rfcf-tgt" name="target_url" class="large-text code" value="<?php echo esc_attr( $form['target_url'] ); ?>">
-							<p class="description"><?php esc_html_e( 'For example https://example.org/new/${1}. Use ${1}, ${2}… to insert what each * matched.', 'simple-csv-cloudflare-redirects' ); ?></p>
+							<p class="description"><?php esc_html_e( 'For example https://example.org/new/${1}. Use ${1}, ${2}… to insert what each * matched.', 'simple-csv-redirects-with-cloudflare' ); ?></p>
 						</td>
 					</tr>
 					<tr class="rfcf-custom"<?php echo $simple ? ' hidden' : ''; ?>>
-						<th scope="row"><label for="rfcf-expr"><?php esc_html_e( 'Expression', 'simple-csv-cloudflare-redirects' ); ?></label></th>
+						<th scope="row"><label for="rfcf-expr"><?php esc_html_e( 'Expression', 'simple-csv-redirects-with-cloudflare' ); ?></label></th>
 						<td>
 							<textarea id="rfcf-expr" name="expression" rows="3" class="large-text code"><?php echo esc_textarea( $form['expression'] ); ?></textarea>
-							<p class="description"><?php esc_html_e( 'A Cloudflare Rules language expression, for example (http.host eq "example.org" and http.request.uri.path eq "/old").', 'simple-csv-cloudflare-redirects' ); ?></p>
+							<p class="description"><?php esc_html_e( 'A Cloudflare Rules language expression, for example (http.host eq "example.org" and http.request.uri.path eq "/old").', 'simple-csv-redirects-with-cloudflare' ); ?></p>
 						</td>
 					</tr>
 					<tr class="rfcf-custom"<?php echo $simple ? ' hidden' : ''; ?>>
-						<th scope="row"><label for="rfcf-tv"><?php esc_html_e( 'Redirect to', 'simple-csv-cloudflare-redirects' ); ?></label></th>
+						<th scope="row"><label for="rfcf-tv"><?php esc_html_e( 'Redirect to', 'simple-csv-redirects-with-cloudflare' ); ?></label></th>
 						<td>
 							<fieldset>
-								<legend class="screen-reader-text"><span><?php esc_html_e( 'Target type', 'simple-csv-cloudflare-redirects' ); ?></span></legend>
-								<label><input type="radio" name="target_type" value="static" <?php checked( $form['target_type'], 'static' ); ?>> <?php esc_html_e( 'Static URL', 'simple-csv-cloudflare-redirects' ); ?></label><br>
-								<label><input type="radio" name="target_type" value="dynamic" <?php checked( $form['target_type'], 'dynamic' ); ?>> <?php esc_html_e( 'Dynamic expression', 'simple-csv-cloudflare-redirects' ); ?></label>
+								<legend class="screen-reader-text"><span><?php esc_html_e( 'Target type', 'simple-csv-redirects-with-cloudflare' ); ?></span></legend>
+								<label><input type="radio" name="target_type" value="static" <?php checked( $form['target_type'], 'static' ); ?>> <?php esc_html_e( 'Static URL', 'simple-csv-redirects-with-cloudflare' ); ?></label><br>
+								<label><input type="radio" name="target_type" value="dynamic" <?php checked( $form['target_type'], 'dynamic' ); ?>> <?php esc_html_e( 'Dynamic expression', 'simple-csv-redirects-with-cloudflare' ); ?></label>
 							</fieldset>
 							<p><input type="text" id="rfcf-tv" name="target_value" class="large-text code" value="<?php echo esc_attr( $form['target_value'] ); ?>"></p>
 						</td>
 					</tr>
 					<tr>
-						<th scope="row"><label for="rfcf-status"><?php esc_html_e( 'Status code', 'simple-csv-cloudflare-redirects' ); ?></label></th>
+						<th scope="row"><label for="rfcf-status"><?php esc_html_e( 'Status code', 'simple-csv-redirects-with-cloudflare' ); ?></label></th>
 						<td>
 							<select id="rfcf-status" name="status_code">
 								<?php foreach ( self::STATUSES as $code ) : ?>
 									<option value="<?php echo (int) $code; ?>" <?php selected( (int) $form['status_code'], $code ); ?>><?php echo (int) $code; ?></option>
 								<?php endforeach; ?>
 							</select>
-							<p class="description"><?php esc_html_e( '301 permanent, 302 temporary. 307 and 308 keep the request method.', 'simple-csv-cloudflare-redirects' ); ?></p>
+							<p class="description"><?php esc_html_e( '301 permanent, 302 temporary. 307 and 308 keep the request method.', 'simple-csv-redirects-with-cloudflare' ); ?></p>
 						</td>
 					</tr>
 					<tr>
-						<th scope="row"><?php esc_html_e( 'Options', 'simple-csv-cloudflare-redirects' ); ?></th>
+						<th scope="row"><?php esc_html_e( 'Options', 'simple-csv-redirects-with-cloudflare' ); ?></th>
 						<td>
 							<fieldset>
-								<legend class="screen-reader-text"><span><?php esc_html_e( 'Options', 'simple-csv-cloudflare-redirects' ); ?></span></legend>
-								<label><input type="checkbox" name="preserve_query_string" value="1" <?php checked( $form['preserve_query_string'] ); ?>> <?php esc_html_e( 'Preserve query string', 'simple-csv-cloudflare-redirects' ); ?></label><br>
-								<label><input type="checkbox" name="enabled" value="1" <?php checked( $form['enabled'] ); ?>> <?php esc_html_e( 'Enabled', 'simple-csv-cloudflare-redirects' ); ?></label>
+								<legend class="screen-reader-text"><span><?php esc_html_e( 'Options', 'simple-csv-redirects-with-cloudflare' ); ?></span></legend>
+								<label><input type="checkbox" name="preserve_query_string" value="1" <?php checked( $form['preserve_query_string'] ); ?>> <?php esc_html_e( 'Preserve query string', 'simple-csv-redirects-with-cloudflare' ); ?></label><br>
+								<label><input type="checkbox" name="enabled" value="1" <?php checked( $form['enabled'] ); ?>> <?php esc_html_e( 'Enabled', 'simple-csv-redirects-with-cloudflare' ); ?></label>
 							</fieldset>
 						</td>
 					</tr>
 					<?php if ( ! $editing ) : ?>
 						<tr>
-							<th scope="row"><?php esc_html_e( 'Position', 'simple-csv-cloudflare-redirects' ); ?></th>
+							<th scope="row"><?php esc_html_e( 'Position', 'simple-csv-redirects-with-cloudflare' ); ?></th>
 							<td>
 								<fieldset>
-									<legend class="screen-reader-text"><span><?php esc_html_e( 'Position', 'simple-csv-cloudflare-redirects' ); ?></span></legend>
-									<label><input type="radio" name="position" value="bottom" <?php checked( $form['position'], 'bottom' ); ?>> <?php esc_html_e( 'Last (checked after existing rules)', 'simple-csv-cloudflare-redirects' ); ?></label><br>
-									<label><input type="radio" name="position" value="top" <?php checked( $form['position'], 'top' ); ?>> <?php esc_html_e( 'First (checked before existing rules)', 'simple-csv-cloudflare-redirects' ); ?></label>
+									<legend class="screen-reader-text"><span><?php esc_html_e( 'Position', 'simple-csv-redirects-with-cloudflare' ); ?></span></legend>
+									<label><input type="radio" name="position" value="bottom" <?php checked( $form['position'], 'bottom' ); ?>> <?php esc_html_e( 'Last (checked after existing rules)', 'simple-csv-redirects-with-cloudflare' ); ?></label><br>
+									<label><input type="radio" name="position" value="top" <?php checked( $form['position'], 'top' ); ?>> <?php esc_html_e( 'First (checked before existing rules)', 'simple-csv-redirects-with-cloudflare' ); ?></label>
 								</fieldset>
-								<p class="description"><?php esc_html_e( 'Put specific rules above broad wildcard rules. You can move rules later from the list.', 'simple-csv-cloudflare-redirects' ); ?></p>
+								<p class="description"><?php esc_html_e( 'Put specific rules above broad wildcard rules. You can move rules later from the list.', 'simple-csv-redirects-with-cloudflare' ); ?></p>
 							</td>
 						</tr>
 					<?php endif; ?>
 				</table>
 
 				<p class="submit">
-					<?php submit_button( $editing ? __( 'Update Rule', 'simple-csv-cloudflare-redirects' ) : __( 'Add Rule', 'simple-csv-cloudflare-redirects' ), 'primary', 'submit', false ); ?>
-					<a href="<?php echo esc_url( $this->cf_url( [ 'zone' => $zone ] ) ); ?>" class="button"><?php esc_html_e( 'Cancel', 'simple-csv-cloudflare-redirects' ); ?></a>
+					<?php submit_button( $editing ? __( 'Update Rule', 'simple-csv-redirects-with-cloudflare' ) : __( 'Add Rule', 'simple-csv-redirects-with-cloudflare' ), 'primary', 'submit', false ); ?>
+					<a href="<?php echo esc_url( $this->cf_url( [ 'zone' => $zone ] ) ); ?>" class="button"><?php esc_html_e( 'Cancel', 'simple-csv-redirects-with-cloudflare' ); ?></a>
 				</p>
 			</form>
 		</div>
@@ -1213,24 +1213,24 @@ final class RFCF_Admin {
 	/** @return array|WP_Error Cloudflare rule body. */
 	private function form_to_rule( array $f, $zone_name ) {
 		if ( ! in_array( $f['status_code'], self::STATUSES, true ) ) {
-			return new WP_Error( 'rfcf', __( 'Choose a valid status code.', 'simple-csv-cloudflare-redirects' ) );
+			return new WP_Error( 'rfcf', __( 'Choose a valid status code.', 'simple-csv-redirects-with-cloudflare' ) );
 		}
 
 		if ( 'simple' === $f['mode'] ) {
 			if ( ! preg_match( '#^(?:https?|\*)://([^/?\#]+)#i', $f['source_url'], $m ) ) {
-				return new WP_Error( 'rfcf', __( 'Request URL must start with https:// (or http://).', 'simple-csv-cloudflare-redirects' ) );
+				return new WP_Error( 'rfcf', __( 'Request URL must start with https:// (or http://).', 'simple-csv-redirects-with-cloudflare' ) );
 			}
 			$host = strtolower( preg_replace( '/:\d+$/', '', $m[1] ) );
 			$base = ltrim( preg_replace( '/^\*/', '', $host ), '.' );
 			if ( $base !== $zone_name && substr( $base, -strlen( '.' . $zone_name ) ) !== '.' . $zone_name ) {
 				/* translators: %s: domain */
-				return new WP_Error( 'rfcf', sprintf( __( 'Request URL must be on %s or one of its subdomains.', 'simple-csv-cloudflare-redirects' ), $zone_name ) );
+				return new WP_Error( 'rfcf', sprintf( __( 'Request URL must be on %s or one of its subdomains.', 'simple-csv-redirects-with-cloudflare' ), $zone_name ) );
 			}
 			if ( ! preg_match( '#^https?://\S+$#i', $f['target_url'] ) ) {
-				return new WP_Error( 'rfcf', __( 'Target URL must be a full URL starting with https:// (no spaces).', 'simple-csv-cloudflare-redirects' ) );
+				return new WP_Error( 'rfcf', __( 'Target URL must be a full URL starting with https:// (no spaces).', 'simple-csv-redirects-with-cloudflare' ) );
 			}
 			if ( false !== strpos( $f['source_url'] . $f['target_url'], '"#' ) ) {
-				return new WP_Error( 'rfcf', __( 'URLs cannot contain the sequence "#.', 'simple-csv-cloudflare-redirects' ) );
+				return new WP_Error( 'rfcf', __( 'URLs cannot contain the sequence "#.', 'simple-csv-redirects-with-cloudflare' ) );
 			}
 			$expression = 'http.request.full_uri wildcard ' . $this->raw( $f['source_url'] );
 			$target     = false !== strpos( $f['target_url'], '${' )
@@ -1238,7 +1238,7 @@ final class RFCF_Admin {
 				: [ 'value' => $f['target_url'] ];
 		} else {
 			if ( '' === $f['expression'] || '' === $f['target_value'] ) {
-				return new WP_Error( 'rfcf', __( 'Both the expression and the redirect target are required.', 'simple-csv-cloudflare-redirects' ) );
+				return new WP_Error( 'rfcf', __( 'Both the expression and the redirect target are required.', 'simple-csv-redirects-with-cloudflare' ) );
 			}
 			$expression = $f['expression'];
 			$target     = 'dynamic' === $f['target_type'] ? [ 'expression' => $f['target_value'] ] : [ 'value' => $f['target_value'] ];
@@ -1281,7 +1281,7 @@ final class RFCF_Admin {
 				return [ 'ruleset' => $ep, 'rule' => $r, 'index' => $i ];
 			}
 		}
-		return new WP_Error( 'rfcf_gone', __( 'That rule no longer exists.', 'simple-csv-cloudflare-redirects' ) );
+		return new WP_Error( 'rfcf_gone', __( 'That rule no longer exists.', 'simple-csv-redirects-with-cloudflare' ) );
 	}
 
 	/* ------------------------------------------------------------------ *
@@ -1323,7 +1323,7 @@ final class RFCF_Admin {
 				$fail( $this->error_message( $res ) );
 			}
 			$this->log( 'updated', $zones[ $zone ], $this->rule_label( $rule ), $this->summarize( $found['rule'] ), $this->summarize( $rule ) );
-			$this->notice( 'success', __( 'Redirect rule updated.', 'simple-csv-cloudflare-redirects' ) );
+			$this->notice( 'success', __( 'Redirect rule updated.', 'simple-csv-redirects-with-cloudflare' ) );
 			$this->back_to_list( $zone );
 		}
 
@@ -1344,7 +1344,7 @@ final class RFCF_Admin {
 		}
 
 		$this->log( 'added', $zones[ $zone ], $this->rule_label( $rule ), '', $this->summarize( $rule ) );
-		$this->notice( 'success', __( 'Redirect rule added.', 'simple-csv-cloudflare-redirects' ) );
+		$this->notice( 'success', __( 'Redirect rule added.', 'simple-csv-redirects-with-cloudflare' ) );
 		$this->back_to_list( $zone );
 	}
 
@@ -1376,7 +1376,7 @@ final class RFCF_Admin {
 			$this->notice( 'error', $this->error_message( $res ) );
 		} else {
 			$this->log( $body['enabled'] ? 'enabled' : 'disabled', $this->allowed_zones()[ $zone ], $this->rule_label( $r ), '', $this->summarize( $body ) );
-			$this->notice( 'success', $body['enabled'] ? __( 'Redirect rule enabled.', 'simple-csv-cloudflare-redirects' ) : __( 'Redirect rule disabled.', 'simple-csv-cloudflare-redirects' ) );
+			$this->notice( 'success', $body['enabled'] ? __( 'Redirect rule enabled.', 'simple-csv-redirects-with-cloudflare' ) : __( 'Redirect rule disabled.', 'simple-csv-redirects-with-cloudflare' ) );
 		}
 		$this->back_to_list( $zone );
 	}
@@ -1390,7 +1390,7 @@ final class RFCF_Admin {
 			$this->notice( 'error', $this->error_message( $res ) );
 		} else {
 			$this->log( 'deleted', $this->allowed_zones()[ $zone ], $this->rule_label( $r ), $this->summarize( $r ) );
-			$this->notice( 'success', __( 'Redirect rule deleted.', 'simple-csv-cloudflare-redirects' ) );
+			$this->notice( 'success', __( 'Redirect rule deleted.', 'simple-csv-redirects-with-cloudflare' ) );
 		}
 		$this->back_to_list( $zone );
 	}
@@ -1414,9 +1414,9 @@ final class RFCF_Admin {
 			$this->notice( 'error', $this->error_message( $res ) );
 		} else {
 			/* translators: %d: rule position */
-			$pos = __( 'Position %d', 'simple-csv-cloudflare-redirects' );
+			$pos = __( 'Position %d', 'simple-csv-redirects-with-cloudflare' );
 			$this->log( 'moved', $this->allowed_zones()[ $zone ], $this->rule_label( $found['rule'] ), sprintf( $pos, $i + 1 ), sprintf( $pos, $j + 1 ) );
-			$this->notice( 'success', __( 'Redirect rule moved.', 'simple-csv-cloudflare-redirects' ) );
+			$this->notice( 'success', __( 'Redirect rule moved.', 'simple-csv-redirects-with-cloudflare' ) );
 		}
 		$this->back_to_list( $zone );
 	}

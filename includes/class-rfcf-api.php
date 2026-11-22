@@ -45,7 +45,7 @@ final class RFCF_API {
 
 		if ( ! is_array( $data ) ) {
 			/* translators: %d: HTTP status code */
-			return new WP_Error( 'rfcf_bad_response', sprintf( __( 'Unexpected response from Cloudflare (HTTP %d).', 'simple-csv-cloudflare-redirects' ), $code ), [ 'status' => $code ] );
+			return new WP_Error( 'rfcf_bad_response', sprintf( __( 'Unexpected response from Cloudflare (HTTP %d).', 'simple-csv-redirects-with-cloudflare' ), $code ), [ 'status' => $code ] );
 		}
 
 		if ( empty( $data['success'] ) ) {
@@ -92,7 +92,7 @@ final class RFCF_API {
 		}
 		if ( empty( $res['result'][0]['id'] ) ) {
 			/* translators: %s: domain */
-			return new WP_Error( 'rfcf_no_zone', sprintf( __( 'No zone named %s is visible to this token.', 'simple-csv-cloudflare-redirects' ), $name ) );
+			return new WP_Error( 'rfcf_no_zone', sprintf( __( 'No zone named %s is visible to this token.', 'simple-csv-redirects-with-cloudflare' ), $name ) );
 		}
 		return $res['result'][0];
 	}

@@ -69,12 +69,12 @@ final class RFCF_CSV {
 	 */
 	public static function store( $content ) {
 		if ( ! self::prepare_dir() ) {
-			return new WP_Error( 'rfcf_csv_dir', __( 'Could not create the redirects folder in the uploads folder. Check that the web server can write to wp-content/uploads.', 'simple-csv-cloudflare-redirects' ) );
+			return new WP_Error( 'rfcf_csv_dir', __( 'Could not create the redirects folder in the uploads folder. Check that the web server can write to wp-content/uploads.', 'simple-csv-redirects-with-cloudflare' ) );
 		}
 
 		$file = self::dir() . '/redirects-' . gmdate( 'Ymd\THis\Z' ) . '.csv';
 		if ( false === file_put_contents( $file, $content ) ) {
-			return new WP_Error( 'rfcf_csv_write', __( 'Could not save the CSV file.', 'simple-csv-cloudflare-redirects' ) );
+			return new WP_Error( 'rfcf_csv_write', __( 'Could not save the CSV file.', 'simple-csv-redirects-with-cloudflare' ) );
 		}
 
 		foreach ( (array) glob( self::dir() . '/redirects-*.csv' ) as $old ) {
@@ -213,7 +213,7 @@ final class RFCF_CSV {
 				$head = array_map( 'strtolower', $cols );
 				if ( ! in_array( 'source', $head, true ) || ! in_array( 'target', $head, true ) ) {
 					/* translators: %d: line number */
-					$errors[] = sprintf( __( 'Line %d: the first row must be a header with at least “source” and “target” columns.', 'simple-csv-cloudflare-redirects' ), $line );
+					$errors[] = sprintf( __( 'Line %d: the first row must be a header with at least “source” and “target” columns.', 'simple-csv-redirects-with-cloudflare' ), $line );
 					break;
 				}
 				$map = array_flip( $head );
@@ -236,7 +236,7 @@ final class RFCF_CSV {
 			$problem = self::validate( $row );
 			if ( $problem ) {
 				/* translators: 1: line number, 2: problem */
-				$errors[] = sprintf( __( 'Line %1$d: %2$s', 'simple-csv-cloudflare-redirects' ), $line, $problem );
+				$errors[] = sprintf( __( 'Line %1$d: %2$s', 'simple-csv-redirects-with-cloudflare' ), $line, $problem );
 				if ( count( $errors ) >= 50 ) {
 					break;
 				}
@@ -248,13 +248,13 @@ final class RFCF_CSV {
 
 			if ( count( $rows ) > self::MAX_ROWS ) {
 				/* translators: %d: maximum rows */
-				$errors[] = sprintf( __( 'The file has more than %d redirects.', 'simple-csv-cloudflare-redirects' ), self::MAX_ROWS );
+				$errors[] = sprintf( __( 'The file has more than %d redirects.', 'simple-csv-redirects-with-cloudflare' ), self::MAX_ROWS );
 				break;
 			}
 		}
 
 		if ( null === $map && ! $errors ) {
-			$errors[] = __( 'The file is empty.', 'simple-csv-cloudflare-redirects' );
+			$errors[] = __( 'The file is empty.', 'simple-csv-redirects-with-cloudflare' );
 		}
 
 		return [
@@ -270,28 +270,28 @@ final class RFCF_CSV {
 		$status = (string) $r['status'];
 
 		if ( '' === $source || '/' !== $source[0] ) {
-			return __( 'source must be a path starting with /.', 'simple-csv-cloudflare-redirects' );
+			return __( 'source must be a path starting with /.', 'simple-csv-redirects-with-cloudflare' );
 		}
 		if ( preg_match( '/[\s?#]/', $source ) ) {
-			return __( 'source must be a path only, without spaces, ? or #.', 'simple-csv-cloudflare-redirects' );
+			return __( 'source must be a path only, without spaces, ? or #.', 'simple-csv-redirects-with-cloudflare' );
 		}
 		if ( '' === $target || ! ( '/' === $target[0] || preg_match( '#^https?://#i', $target ) ) ) {
-			return __( 'target must start with / or https://.', 'simple-csv-cloudflare-redirects' );
+			return __( 'target must start with / or https://.', 'simple-csv-redirects-with-cloudflare' );
 		}
 		if ( preg_match( '/\s/', $target ) ) {
-			return __( 'target cannot contain spaces.', 'simple-csv-cloudflare-redirects' );
+			return __( 'target cannot contain spaces.', 'simple-csv-redirects-with-cloudflare' );
 		}
 		if ( '' !== $status && ! in_array( (int) $status, self::STATUSES, true ) ) {
-			return __( 'status must be 301, 302, 303, 307 or 308.', 'simple-csv-cloudflare-redirects' );
+			return __( 'status must be 301, 302, 303, 307 or 308.', 'simple-csv-redirects-with-cloudflare' );
 		}
 		if ( preg_match_all( '/\$\{(\d+)\}/', $target, $m ) && max( array_map( 'intval', $m[1] ) ) > substr_count( $source, '*' ) ) {
-			return __( 'target uses a ${n} that has no matching * in source.', 'simple-csv-cloudflare-redirects' );
+			return __( 'target uses a ${n} that has no matching * in source.', 'simple-csv-redirects-with-cloudflare' );
 		}
 		if ( null === $r['preserve_query_string'] ) {
-			return __( 'preserve_query_string must be yes or no.', 'simple-csv-cloudflare-redirects' );
+			return __( 'preserve_query_string must be yes or no.', 'simple-csv-redirects-with-cloudflare' );
 		}
 		if ( null === $r['enabled'] ) {
-			return __( 'enabled must be yes or no.', 'simple-csv-cloudflare-redirects' );
+			return __( 'enabled must be yes or no.', 'simple-csv-redirects-with-cloudflare' );
 		}
 		return '';
 	}
@@ -303,7 +303,7 @@ final class RFCF_CSV {
 			$s .= ' +query';
 		}
 		if ( empty( $r['enabled'] ) ) {
-			$s .= ' [' . __( 'disabled', 'simple-csv-cloudflare-redirects' ) . ']';
+			$s .= ' [' . __( 'disabled', 'simple-csv-redirects-with-cloudflare' ) . ']';
 		}
 		return $s;
 	}
