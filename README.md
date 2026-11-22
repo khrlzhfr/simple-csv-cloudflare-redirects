@@ -1,6 +1,6 @@
-# Simple CSV Cloudflare Redirects
+# Simple CSV & Cloudflare Redirects
 
-By [Khairil Zhafri](https://khrlzh.fr). Version 1.0.0. Requires WordPress 6.4+ and PHP 7.4+. Folder, main file and text domain: `simple-csv-cloudflare-redirects`.
+By [Khairil Zhafri](https://khrlzh.fr). Version 1.0.1. Requires WordPress 6.4+ and PHP 7.4+. Folder, main file and text domain: `simple-csv-cloudflare-redirects`.
 
 Manage redirects from **Tools → Redirects** in two ways:
 
@@ -11,7 +11,7 @@ Manage redirects from **Tools → Redirects** in two ways:
 
 **From GitHub (gets updates straight away):** download `simple-csv-cloudflare-redirects.zip` from the [latest release](https://github.com/khrlzhfr/simple-csv-cloudflare-redirects/releases/latest), then upload it under Plugins → Add New → Upload Plugin. New versions appear under Dashboard → Updates as soon as they are released on GitHub; select **Enable auto-updates** next to the plugin to install them automatically.
 
-**From WordPress.org:** once approved in the Plugin Directory, install **Simple CSV Cloudflare Redirects** from Plugins → Add New. Updates arrive through WordPress.org.
+**From WordPress.org:** once approved in the Plugin Directory, install **Simple CSV & Cloudflare Redirects** from Plugins → Add New. Updates arrive through WordPress.org.
 
 Both are the same plugin. The GitHub copy also contains an updater (`includes/github-updater.php` and `lib/plugin-update-checker`, [Plugin Update Checker](https://github.com/YahnisElsts/plugin-update-checker), MIT). WordPress.org doesn't allow updaters, so its copy leaves out everything listed in `.distignore`.
 
@@ -122,8 +122,11 @@ Deleting the plugin removes the change log, its caches, and each site's `uploads
 
 ## Changelog
 
+### 1.0.1
+- Renamed to **Simple CSV & Cloudflare Redirects**.
+
 ### 1.0.0
-- First public release, submitted to the WordPress.org Plugin Directory as **Simple CSV Cloudflare Redirects**.
+- First public release, submitted to the WordPress.org Plugin Directory as **Simple CSV & Cloudflare Redirects**.
 - CSV Rules: add, edit, reorder, enable, disable and delete in WordPress, or download, edit and upload the CSV. Columns: `description, source, target, status, preserve_query_string, enabled`.
 - Cloudflare Rules: manage Cloudflare Single Redirect rules, configured with `RFCF_CONFIG` in wp-config.php.
 - Change log of every rule change.
