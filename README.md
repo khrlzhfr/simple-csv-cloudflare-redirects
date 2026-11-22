@@ -13,13 +13,14 @@ Manage redirects from **Tools → Redirects** in two ways:
 
 **From WordPress.org:** once approved in the Plugin Directory, install **Simple CSV Cloudflare Redirects** from Plugins → Add New. Updates arrive through WordPress.org.
 
-Both are the same plugin. The GitHub build also contains an updater (`includes/github-updater.php` and `lib/plugin-update-checker`, [Plugin Update Checker](https://github.com/YahnisElsts/plugin-update-checker), MIT), which WordPress.org doesn't allow, so the WordPress.org build leaves those out.
+Both are the same plugin. The GitHub copy also contains an updater (`includes/github-updater.php` and `lib/plugin-update-checker`, [Plugin Update Checker](https://github.com/YahnisElsts/plugin-update-checker), MIT). WordPress.org doesn't allow updaters, so its copy leaves out everything listed in `.distignore`.
 
 ### Releasing a new version
 
 1. Bump `Version:` in `simple-csv-cloudflare-redirects.php`, `Stable tag:` in `readme.txt`, and add a changelog entry to both readmes.
 2. Commit, then publish a release with a matching tag (for example `v1.0.1`) on GitHub's Releases page, or push the tag.
-3. The Release workflow checks the version and attaches both zips: `simple-csv-cloudflare-redirects.zip` (GitHub build) and `simple-csv-cloudflare-redirects-wporg.zip` (WordPress.org build, for the plugin's SVN repository).
+3. The Release workflow checks the version and attaches `simple-csv-cloudflare-redirects.zip`. Sites installed from GitHub see the update straight away.
+4. Once the plugin is approved on WordPress.org, copy the same version to its SVN repository, leaving out the files in `.distignore`.
 
 ## Tabs
 
