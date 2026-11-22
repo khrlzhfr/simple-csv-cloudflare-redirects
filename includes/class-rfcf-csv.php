@@ -92,11 +92,9 @@ final class RFCF_CSV {
 	}
 
 	public static function to_csv( array $rows ) {
-		$fh = fopen( 'php://temp', 'r+' );
-		fputcsv( $fh, self::COLUMNS, ',', '"', '' );
+		$lines = [ self::csv_line( self::COLUMNS ) ];
 		foreach ( $rows as $r ) {
-			fputcsv(
-				$fh,
+			$lines[] = self::csv_line(
 				[
 					$r['description'],
 					$r['source'],
@@ -104,16 +102,76 @@ final class RFCF_CSV {
 					(int) $r['status'],
 					$r['preserve_query_string'] ? 'yes' : 'no',
 					$r['enabled'] ? 'yes' : 'no',
-				],
-				',',
-				'"',
-				''
+				]
 			);
 		}
-		rewind( $fh );
-		$out = stream_get_contents( $fh );
-		fclose( $fh );
-		return $out;
+		return implode( "\n", $lines ) . "\n";
+	}
+
+	/** One CSV line (RFC 4180): fields with commas, quotes, line breaks or edge spaces are quoted. */
+	private static function csv_line( array $fields ) {
+		$out = [];
+		foreach ( $fields as $v ) {
+			$v     = (string) $v;
+			$out[] = preg_match( '/[",\r\n]|^\s|\s$/', $v ) ? '"' . str_replace( '"', '""', $v ) . '"' : $v;
+		}
+		return implode( ',', $out );
+	}
+
+	/**
+	 * Splits CSV text into records (RFC 4180: quoted fields may hold commas, quotes and line breaks).
+	 *
+	 * @return array<int,array{0:string[],1:int}> Each record's fields and the line it starts on.
+	 */
+	private static function csv_records( $text ) {
+		$records = [];
+		$row     = [];
+		$field   = '';
+		$quoted  = false;
+		$line    = 1;
+		$start   = 1;
+		$len     = strlen( $text );
+
+		for ( $i = 0; $i < $len; $i++ ) {
+			$c = $text[ $i ];
+			if ( $quoted ) {
+				if ( '"' === $c ) {
+					if ( $i + 1 < $len && '"' === $text[ $i + 1 ] ) {
+						$field .= '"';
+						$i++;
+					} else {
+						$quoted = false;
+					}
+				} else {
+					if ( "\n" === $c ) {
+						$line++;
+					}
+					$field .= $c;
+				}
+			} elseif ( '"' === $c && '' === $field ) {
+				$quoted = true;
+			} elseif ( ',' === $c ) {
+				$row[] = $field;
+				$field = '';
+			} elseif ( "\n" === $c || "\r" === $c ) {
+				if ( "\r" === $c && $i + 1 < $len && "\n" === $text[ $i + 1 ] ) {
+					$i++;
+				}
+				$row[]     = $field;
+				$records[] = [ $row, $start ];
+				$row       = [];
+				$field     = '';
+				$line++;
+				$start = $line;
+			} else {
+				$field .= $c;
+			}
+		}
+		if ( '' !== $field || $row ) {
+			$row[]     = $field;
+			$records[] = [ $row, $start ];
+		}
+		return $records;
 	}
 
 	/* ------------------------------------------------------------------ *
@@ -143,14 +201,9 @@ final class RFCF_CSV {
 		$rows    = [];
 		$errors  = [];
 		$map     = null;
-		$line    = 0;
 
-		$fh = fopen( 'php://temp', 'r+' );
-		fwrite( $fh, $content );
-		rewind( $fh );
-
-		while ( false !== ( $cols = fgetcsv( $fh, 0, ',', '"', '' ) ) ) {
-			$line++;
+		foreach ( self::csv_records( $content ) as $record ) {
+			list( $cols, $line ) = $record;
 			if ( '' === trim( implode( '', array_map( 'strval', $cols ) ) ) ) {
 				continue;
 			}
@@ -199,7 +252,6 @@ final class RFCF_CSV {
 				break;
 			}
 		}
-		fclose( $fh );
 
 		if ( null === $map && ! $errors ) {
 			$errors[] = __( 'The file is empty.', 'simple-csv-cloudflare-redirects' );

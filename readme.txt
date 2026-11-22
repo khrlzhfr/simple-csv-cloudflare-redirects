@@ -4,7 +4,7 @@ Tags: redirects, redirect, csv, cloudflare, 301
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -75,6 +75,10 @@ Zone → Single Redirect → Edit, and Zone → Zone → Read, limited to the do
 
 == Changelog ==
 
+= 1.0.2 =
+* Reads and writes CSV text without temporary streams.
+* Each action checks its security token before reading any input.
+
 = 1.0.1 =
 * Renamed to Simple CSV & Cloudflare Redirects.
 
@@ -86,5 +90,5 @@ Zone → Single Redirect → Edit, and Zone → Zone → Read, limited to the do
 
 == Upgrade Notice ==
 
-= 1.0.1 =
-Name change only.
+= 1.0.2 =
+Code clean-up; no change in how redirects work.

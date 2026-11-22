@@ -164,7 +164,7 @@ final class RFCF_Admin {
 	}
 
 	/* ------------------------------------------------------------------ *
-	 * URLs, notices, guards
+	 * URLs, notices, permission checks
 	 * ------------------------------------------------------------------ */
 
 	public function page_url( $args = [] ) {
@@ -189,7 +189,7 @@ final class RFCF_Admin {
 				),
 				admin_url( 'admin-post.php' )
 			),
-			$action . '_' . $rule_id
+			$action
 		);
 	}
 
@@ -215,16 +215,16 @@ final class RFCF_Admin {
 		return $msg;
 	}
 
-	private function guard( $nonce_action ) {
+	/** Stops unless the current user may manage redirects. Each handler then checks its nonce itself. */
+	private function require_cap() {
 		if ( ! RFCF_Config::user_can_manage() ) {
 			wp_die( esc_html__( 'Sorry, you are not allowed to do this.', 'simple-csv-cloudflare-redirects' ), 403 );
 		}
-		check_admin_referer( $nonce_action );
 	}
 
 	/** Zone ID from the request, only if it is on the allowed list. */
-	private function requested_zone( $source ) {
-		$zone  = isset( $source['zone'] ) ? sanitize_key( wp_unslash( $source['zone'] ) ) : '';
+	private function requested_zone( $zone ) {
+		$zone  = sanitize_key( (string) $zone );
 		$zones = $this->allowed_zones();
 		return ( $zone && isset( $zones[ $zone ] ) ) ? $zone : '';
 	}
@@ -244,10 +244,10 @@ final class RFCF_Admin {
 
 	/**
 	 * A posted text field, unslashed and sanitised.
-	 * Nonces are checked by guard() in every handler before this is called.
+	 * Every handler checks its nonce with check_admin_referer() before calling this.
 	 */
 	private function post_text( $key ) {
-		return isset( $_POST[ $key ] ) ? sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce checked in guard().
+		return isset( $_POST[ $key ] ) ? sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce checked by the calling handler.
 	}
 
 	/**
@@ -255,7 +255,7 @@ final class RFCF_Admin {
 	 * sanitize_text_field() would strip %-encoded characters these values need.
 	 */
 	private function post_line( $key ) {
-		return isset( $_POST[ $key ] ) ? $this->sanitize_line( wp_unslash( $_POST[ $key ] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce checked in guard(); sanitised by sanitize_line().
+		return isset( $_POST[ $key ] ) ? $this->sanitize_line( wp_unslash( $_POST[ $key ] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce checked by the calling handler; sanitised by sanitize_line().
 	}
 
 	/** Single line of plain text: control characters removed, tags stripped, trimmed. */
@@ -265,7 +265,7 @@ final class RFCF_Admin {
 
 	/** Whether a posted checkbox is ticked. */
 	private function post_flag( $key ) {
-		return ! empty( $_POST[ $key ] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce checked in guard().
+		return ! empty( $_POST[ $key ] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce checked by the calling handler.
 	}
 
 	/** Screen hook of Tools → Redirects. */
@@ -458,7 +458,7 @@ final class RFCF_Admin {
 				),
 				admin_url( 'admin-post.php' )
 			),
-			$action . '_' . ( $index + 1 )
+			$action
 		);
 	}
 
@@ -479,7 +479,7 @@ final class RFCF_Admin {
 	private function render_csv_edit_screen( $action ) {
 		$csv     = RFCF_CSV::current();
 		$editing = 'csv-edit' === $action;
-		$n       = isset( $_GET['row'] ) ? absint( $_GET['row'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only, or nonce checked in guard().
+		$n       = isset( $_GET['row'] ) ? absint( $_GET['row'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only: picks which rule the edit screen shows.
 		$form    = $this->csv_blank_form();
 		$error   = '';
 
@@ -602,7 +602,8 @@ final class RFCF_Admin {
 	}
 
 	public function handle_csv_save() {
-		$this->guard( 'rfcf_csv_save' );
+		$this->require_cap();
+		check_admin_referer( 'rfcf_csv_save' );
 		$n    = absint( $this->post_text( 'row' ) );
 		$list = $this->page_url();
 		$back = $this->page_url( $n ? [ 'action' => 'csv-edit', 'row' => $n ] : [ 'action' => 'csv-add' ] );
@@ -662,10 +663,11 @@ final class RFCF_Admin {
 
 	/** Shared start for CSV row actions. @return array{0:array,1:int} rows, 0-based index */
 	private function csv_row_action_start( $action ) {
-		$n = isset( $_GET['row'] ) ? absint( $_GET['row'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only, or nonce checked in guard().
-		$this->guard( $action . '_' . $n );
+		$this->require_cap();
+		check_admin_referer( $action );
+		$n    = isset( $_GET['row'] ) ? absint( $_GET['row'] ) : 0;
 		$list = $this->page_url();
-		$this->csv_check_fresh( wp_unslash( $_GET['file'] ?? '' ), $list ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only, or nonce checked in guard().
+		$this->csv_check_fresh( isset( $_GET['file'] ) ? sanitize_file_name( wp_unslash( $_GET['file'] ) ) : '', $list );
 
 		$rows = RFCF_CSV::current()['rows'];
 		if ( ! isset( $rows[ $n - 1 ] ) ) {
@@ -706,7 +708,7 @@ final class RFCF_Admin {
 
 	public function handle_csv_move() {
 		list( $rows, $i ) = $this->csv_row_action_start( 'rfcf_csv_move' );
-		$dir = ( isset( $_GET['dir'] ) && 'down' === $_GET['dir'] ) ? 'down' : 'up'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only, or nonce checked in guard().
+		$dir = ( isset( $_GET['dir'] ) && 'down' === sanitize_key( wp_unslash( $_GET['dir'] ) ) ) ? 'down' : 'up'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- nonce checked in csv_row_action_start().
 		$j   = 'up' === $dir ? $i - 1 : $i + 1;
 
 		if ( isset( $rows[ $j ] ) ) {
@@ -725,10 +727,11 @@ final class RFCF_Admin {
 	}
 
 	public function handle_upload_csv() {
-		$this->guard( 'rfcf_upload_csv' );
+		$this->require_cap();
+		check_admin_referer( 'rfcf_upload_csv' );
 		$back = $this->page_url();
 
-		$f = $_FILES['csv'] ?? null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+		$f = isset( $_FILES['csv'] ) && is_array( $_FILES['csv'] ) ? $_FILES['csv'] : null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- an upload array; each part is validated below.
 		if ( ! $f || ! isset( $f['error'] ) || UPLOAD_ERR_OK !== (int) $f['error'] || ! is_uploaded_file( $f['tmp_name'] ) ) {
 			$this->notice( 'error', __( 'The upload failed. Choose a CSV file and try again.', 'simple-csv-cloudflare-redirects' ) );
 			wp_safe_redirect( $back );
@@ -787,7 +790,8 @@ final class RFCF_Admin {
 	}
 
 	public function handle_download_csv() {
-		$this->guard( 'rfcf_download_csv' );
+		$this->require_cap();
+		check_admin_referer( 'rfcf_download_csv' );
 		$file = RFCF_CSV::current_file();
 
 		nocache_headers();
@@ -901,7 +905,7 @@ final class RFCF_Admin {
 	}
 
 	private function current_zone() {
-		$zone = $this->requested_zone( $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only, or nonce checked in guard().
+		$zone = $this->requested_zone( isset( $_GET['zone'] ) ? sanitize_key( wp_unslash( $_GET['zone'] ) ) : '' ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only: picks which website's rules to show.
 		return $zone ? $zone : (string) key( $this->allowed_zones() );
 	}
 
@@ -969,7 +973,7 @@ final class RFCF_Admin {
 	private function render_edit_screen( $action ) {
 		$zones   = $this->allowed_zones();
 		$zone    = $this->current_zone();
-		$rule_id = isset( $_GET['rule'] ) ? sanitize_key( wp_unslash( $_GET['rule'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only, or nonce checked in guard().
+		$rule_id = isset( $_GET['rule'] ) ? sanitize_key( wp_unslash( $_GET['rule'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only: picks which rule the edit screen shows.
 		$form    = $this->blank_form();
 		$error   = null;
 
@@ -1285,8 +1289,9 @@ final class RFCF_Admin {
 	 * ------------------------------------------------------------------ */
 
 	public function handle_save_rule() {
-		$this->guard( 'rfcf_save_rule' );
-		$zone = $this->requested_zone( $_POST );
+		$this->require_cap();
+		check_admin_referer( 'rfcf_save_rule' );
+		$zone = $this->requested_zone( $this->post_text( 'zone' ) );
 		if ( ! $zone ) {
 			$this->deny_zone();
 		}
@@ -1345,9 +1350,10 @@ final class RFCF_Admin {
 
 	/** Shared start for the row actions: checks, then finds the rule. */
 	private function row_action_start( $action ) {
-		$rule_id = isset( $_GET['rule'] ) ? sanitize_key( wp_unslash( $_GET['rule'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only, or nonce checked in guard().
-		$this->guard( $action . '_' . $rule_id );
-		$zone = $this->requested_zone( $_GET );
+		$this->require_cap();
+		check_admin_referer( $action );
+		$rule_id = isset( $_GET['rule'] ) ? sanitize_key( wp_unslash( $_GET['rule'] ) ) : '';
+		$zone    = $this->requested_zone( isset( $_GET['zone'] ) ? sanitize_key( wp_unslash( $_GET['zone'] ) ) : '' );
 		if ( ! $zone ) {
 			$this->deny_zone();
 		}
@@ -1391,7 +1397,7 @@ final class RFCF_Admin {
 
 	public function handle_move_rule() {
 		list( $zone, $found ) = $this->row_action_start( 'rfcf_move_rule' );
-		$dir                  = ( isset( $_GET['dir'] ) && 'down' === $_GET['dir'] ) ? 'down' : 'up'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only, or nonce checked in guard().
+		$dir                  = ( isset( $_GET['dir'] ) && 'down' === sanitize_key( wp_unslash( $_GET['dir'] ) ) ) ? 'down' : 'up'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- nonce checked in row_action_start().
 		$rules                = array_values( (array) $found['ruleset']['rules'] );
 		$i                    = $found['index'];
 		$j                    = 'up' === $dir ? $i - 1 : $i + 1;
