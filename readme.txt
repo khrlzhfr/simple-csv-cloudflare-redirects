@@ -1,10 +1,10 @@
-=== Simple CSV Redirects with Cloudflare ===
+=== khrlzhfr Simple CSV Redirects with Cloudflare ===
 Contributors: khrlzhfr
 Tags: redirects, redirect, csv, cloudflare, 301
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.1.3
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ Manage redirects as CSV rules in WordPress, and optionally as Cloudflare Single 
 
 == Description ==
 
-Simple CSV Redirects with Cloudflare gives you two ways to manage redirects from one screen under **Tools → Redirects**:
+khrlzhfr Simple CSV Redirects with Cloudflare gives you two ways to manage redirects from one screen under **Tools → Redirects**:
 
 * **CSV Rules** – unlimited redirects kept in a single CSV file and applied by WordPress. Add, edit, reorder, enable, disable and delete rules in WordPress, or download the CSV, edit it in a spreadsheet and upload it again.
 * **Cloudflare Rules** (optional) – manage Cloudflare Single Redirect rules for your domains, which redirect at Cloudflare's edge before a request reaches your server.
@@ -75,6 +75,11 @@ Zone → Single Redirect → Edit, and Zone → Zone → Read, limited to the do
 
 == Changelog ==
 
+= 1.2.0 =
+* Renamed to khrlzhfr Simple CSV Redirects with Cloudflare. The folder and text domain are now `khrlzhfr-simple-csv-redirects-with-cloudflare`. To switch a site, install this version, then delete the old copy: settings and data are kept.
+* If two copies are installed, only one runs and the Plugins screen says which. Deleting a copy no longer removes data another installed copy still uses.
+* CSV rule descriptions can no longer start with =, +, - or @, so a downloaded CSV can't run as a spreadsheet formula. Uploaded files are saved in the standard column order.
+
 = 1.1.3 =
 * Column names, setting names, file names and values on the Setup and CSV Rules tabs are shown as code.
 
@@ -102,6 +107,9 @@ Zone → Single Redirect → Edit, and Zone → Zone → Read, limited to the do
 * Change log of every rule change.
 
 == Upgrade Notice ==
+
+= 1.2.0 =
+New name and folder. Install this version first, then delete the old copy; your settings and data are kept.
 
 = 1.1.3 =
 Fixes where the query string goes when a CSV redirect target has a #fragment, and tidies the Setup tab.

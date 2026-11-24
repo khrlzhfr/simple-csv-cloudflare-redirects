@@ -1,6 +1,6 @@
-# Simple CSV Redirects with Cloudflare
+# khrlzhfr Simple CSV Redirects with Cloudflare
 
-By [Khairil Zhafri](https://khrlzh.fr). Version 1.1.3. Requires WordPress 6.4+ and PHP 7.4+. Folder, main file and text domain: `simple-csv-redirects-with-cloudflare`.
+By [Khairil Zhafri](https://khrlzh.fr). Version 1.2.0. Requires WordPress 6.4+ and PHP 7.4+. Folder and text domain: `khrlzhfr-simple-csv-redirects-with-cloudflare`; main file `simple-csv-redirects-with-cloudflare.php`.
 
 Manage redirects from **Tools → Redirects** in two ways:
 
@@ -9,7 +9,7 @@ Manage redirects from **Tools → Redirects** in two ways:
 
 ## Installing
 
-**From GitHub (gets updates straight away):** download `simple-csv-redirects-with-cloudflare.zip` from the [latest release](https://github.com/khrlzhfr/simple-csv-redirects-with-cloudflare/releases/latest), then upload it under Plugins → Add New → Upload Plugin. New versions appear under Dashboard → Updates as soon as they are released on GitHub; select **Enable auto-updates** next to the plugin to install them automatically.
+**From GitHub (gets updates straight away):** download `khrlzhfr-simple-csv-redirects-with-cloudflare.zip` from the [latest release](https://github.com/khrlzhfr/simple-csv-redirects-with-cloudflare/releases/latest), then upload it under Plugins → Add New → Upload Plugin. New versions appear under Dashboard → Updates as soon as they are released on GitHub; select **Enable auto-updates** next to the plugin to install them automatically.
 
 **From WordPress.org:** once approved in the Plugin Directory, install **Simple CSV Redirects with Cloudflare** from Plugins → Add New. Updates arrive through WordPress.org.
 
@@ -19,7 +19,7 @@ Both are the same plugin. The GitHub copy also contains an updater (`includes/gi
 
 1. Bump `Version:` in `simple-csv-redirects-with-cloudflare.php`, `Stable tag:` in `readme.txt`, and add a changelog entry to both readmes.
 2. Commit, then publish a release with a matching tag (for example `v1.0.1`) on GitHub's Releases page, or push the tag.
-3. The Release workflow checks the version and attaches `simple-csv-redirects-with-cloudflare.zip`. Sites installed from GitHub see the update straight away.
+3. The Release workflow checks the version and attaches `khrlzhfr-simple-csv-redirects-with-cloudflare.zip`. Sites installed from GitHub see the update straight away.
 4. Once the plugin is approved on WordPress.org, copy the same version to its SVN repository, leaving out the files in `.distignore`.
 
 ## Tabs
@@ -121,6 +121,11 @@ My Profile → API Tokens → Create Token → Create Custom Token:
 Deleting the plugin removes the change log, its caches, and each site's `uploads/redirects` folder. Cloudflare rules stay in Cloudflare.
 
 ## Changelog
+
+### 1.2.0
+- Renamed to khrlzhfr Simple CSV Redirects with Cloudflare. The folder and text domain are now `khrlzhfr-simple-csv-redirects-with-cloudflare`. To switch a site, install this version, then delete the old copy: settings and data are kept.
+- If two copies are installed, only one runs and the Plugins screen says which. Deleting a copy no longer removes data another installed copy still uses.
+- CSV rule descriptions can no longer start with =, +, - or @, so a downloaded CSV can't run as a spreadsheet formula. Uploaded files are saved in the standard column order.
 
 ### 1.1.3
 - Column names, setting names, file names and values on the Setup and CSV Rules tabs are shown as code.

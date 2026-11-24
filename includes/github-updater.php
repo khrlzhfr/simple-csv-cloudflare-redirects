@@ -13,6 +13,6 @@ require_once dirname( __DIR__ ) . '/lib/plugin-update-checker/plugin-update-chec
 $rfcf_updates = YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
 	'https://github.com/khrlzhfr/simple-csv-redirects-with-cloudflare/',
 	RFCF_FILE,
-	'simple-csv-redirects-with-cloudflare'
+	dirname( plugin_basename( RFCF_FILE ) ) // Keep updates in whichever folder this copy was installed in.
 );
 $rfcf_updates->getVcsApi()->enableReleaseAssets( '/simple-csv-redirects-with-cloudflare\.zip$/' );
