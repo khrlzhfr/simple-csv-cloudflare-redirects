@@ -6,6 +6,11 @@ defined( 'ABSPATH' ) || exit;
  */
 final class RFCF_Admin {
 
+	/** Escapes text for HTML and shows `backticked` parts as code. */
+	private static function code( $text ) {
+		return preg_replace( '/`([^`]+)`/', '<code>$1</code>', esc_html( $text ) );
+	}
+
 	const LOG_OPTION = 'rfcf_log';
 	const LOG_MAX    = 500;
 	const SLUG       = 'rfcf-redirects';
@@ -435,7 +440,7 @@ final class RFCF_Admin {
 					<th scope="row"><label for="rfcf-csv"><?php esc_html_e( 'CSV file', 'simple-csv-redirects-with-cloudflare' ); ?></label></th>
 					<td>
 						<input type="file" id="rfcf-csv" name="csv" accept=".csv,text/csv" required>
-						<p class="description"><?php esc_html_e( 'Columns: description, source, target, status, preserve_query_string, enabled. Only source and target are required.', 'simple-csv-redirects-with-cloudflare' ); ?></p>
+						<p class="description"><?php echo self::code( __( 'Columns: `description`, `source`, `target`, `status`, `preserve_query_string`, `enabled`. Only `source` and `target` are required.', 'simple-csv-redirects-with-cloudflare' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in code(). ?></p>
 					</td>
 				</tr>
 			</table>
@@ -835,17 +840,17 @@ final class RFCF_Admin {
 		<p><?php esc_html_e( 'CSV rules work without any setup. Add and edit them on the CSV Rules tab, or download the CSV, edit it in a spreadsheet app and upload it again.', 'simple-csv-redirects-with-cloudflare' ); ?></p>
 		<pre><code><?php echo esc_html( rtrim( RFCF_CSV::TEMPLATE ) ); ?></code></pre>
 		<ul class="ul-disc">
-			<li><?php esc_html_e( 'description is a note for people; it isn’t used for matching.', 'simple-csv-redirects-with-cloudflare' ); ?></li>
-			<li><?php esc_html_e( 'source is a path on this site, starting with /. Use * as a wildcard. Letter case, trailing slashes and the query string are ignored when matching.', 'simple-csv-redirects-with-cloudflare' ); ?></li>
-			<li><?php esc_html_e( 'target is a path on this site or a full URL. ${1}, ${2}… insert what each * matched.', 'simple-csv-redirects-with-cloudflare' ); ?></li>
-			<li><?php esc_html_e( 'status is 301 (default), 302, 303, 307 or 308.', 'simple-csv-redirects-with-cloudflare' ); ?></li>
-			<li><?php esc_html_e( 'preserve_query_string is yes or no (default no). Yes passes the visitor’s query string on to the target.', 'simple-csv-redirects-with-cloudflare' ); ?></li>
-			<li><?php esc_html_e( 'enabled is yes or no (default yes). Disabled rules stay in the file but are skipped.', 'simple-csv-redirects-with-cloudflare' ); ?></li>
-			<li><?php esc_html_e( 'Only source and target are required. Rules are checked from top to bottom and the first match wins, even when a page exists at that path.', 'simple-csv-redirects-with-cloudflare' ); ?></li>
+			<li><?php echo self::code( __( '`description` is a note for people; it isn’t used for matching.', 'simple-csv-redirects-with-cloudflare' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in code(). ?></li>
+			<li><?php echo self::code( __( '`source` is a path on this site, starting with `/`. Use `*` as a wildcard. Letter case, trailing slashes and the query string are ignored when matching.', 'simple-csv-redirects-with-cloudflare' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in code(). ?></li>
+			<li><?php echo self::code( __( '`target` is a path on this site or a full URL. `${1}`, `${2}`… insert what each `*` matched.', 'simple-csv-redirects-with-cloudflare' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in code(). ?></li>
+			<li><?php echo self::code( __( '`status` is `301` (default), `302`, `303`, `307` or `308`.', 'simple-csv-redirects-with-cloudflare' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in code(). ?></li>
+			<li><?php echo self::code( __( '`preserve_query_string` is `yes` or `no` (default `no`). `yes` passes the visitor’s query string on to the target.', 'simple-csv-redirects-with-cloudflare' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in code(). ?></li>
+			<li><?php echo self::code( __( '`enabled` is `yes` or `no` (default `yes`). Disabled rules stay in the file but are skipped.', 'simple-csv-redirects-with-cloudflare' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in code(). ?></li>
+			<li><?php echo self::code( __( 'Only `source` and `target` are required. Rules are checked from top to bottom and the first match wins, even when a page exists at that path.', 'simple-csv-redirects-with-cloudflare' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in code(). ?></li>
 			<li>
 				<?php
 				/* translators: %s: folder path */
-				echo esc_html( sprintf( __( 'The file is kept in %s. Every change saves a new file named with the time of the change and removes the old one.', 'simple-csv-redirects-with-cloudflare' ), $csv_dir ) );
+				echo self::code( sprintf( __( 'The file is kept in `%s`. Every change saves a new file named with the time of the change and removes the old one.', 'simple-csv-redirects-with-cloudflare' ), $csv_dir ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in code().
 				?>
 			</li>
 			<li><?php esc_html_e( 'CSV rules run inside WordPress, so they don’t apply to pages served from a cache or to files such as PDFs. Use Cloudflare Rules for those.', 'simple-csv-redirects-with-cloudflare' ); ?></li>
@@ -864,8 +869,8 @@ final class RFCF_Admin {
 			<li><?php esc_html_e( 'Under Permissions, add two rows: Zone → Single Redirect → Edit, and Zone → Zone → Read.', 'simple-csv-redirects-with-cloudflare' ); ?></li>
 			<li><?php esc_html_e( 'Under Zone Resources, choose Include → Specific zone and pick each domain this site should manage. Add a row per domain.', 'simple-csv-redirects-with-cloudflare' ); ?></li>
 			<li><?php esc_html_e( 'Optional: under Client IP Address Filtering, allow only this web server’s IP address.', 'simple-csv-redirects-with-cloudflare' ); ?></li>
-			<li><?php esc_html_e( 'Select Continue to summary, then Create Token. Copy the token now; Cloudflare shows it only once. It starts with cfut_.', 'simple-csv-redirects-with-cloudflare' ); ?></li>
-			<li><?php esc_html_e( 'Open wp-config.php and paste the following above the line that says “That’s all, stop editing!”:', 'simple-csv-redirects-with-cloudflare' ); ?></li>
+			<li><?php echo self::code( __( 'Select Continue to summary, then Create Token. Copy the token now; Cloudflare shows it only once. It starts with `cfut_`.', 'simple-csv-redirects-with-cloudflare' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in code(). ?></li>
+			<li><?php echo self::code( __( 'Open `wp-config.php` and paste the following above the line that says “That’s all, stop editing!”:', 'simple-csv-redirects-with-cloudflare' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in code(). ?></li>
 		</ol>
 		<pre><code><?php echo esc_html( is_multisite() ? $multi : $single ); ?></code></pre>
 		<ol start="10">
@@ -875,8 +880,8 @@ final class RFCF_Admin {
 
 		<h2><?php esc_html_e( 'Good to know', 'simple-csv-redirects-with-cloudflare' ); ?></h2>
 		<ul class="ul-disc">
-			<li><?php esc_html_e( 'Administrators and editors can manage redirects by default. Add \'roles\' => [ \'administrator\' ] to RFCF_CONFIG to change that.', 'simple-csv-redirects-with-cloudflare' ); ?></li>
-			<li><?php esc_html_e( 'An account API token (Manage Account → Account API Tokens, starts with cfat_) also works, with the same permissions.', 'simple-csv-redirects-with-cloudflare' ); ?></li>
+			<li><?php echo self::code( __( 'Administrators and editors can manage redirects by default. Add `\'roles\' => [ \'administrator\' ]` to `RFCF_CONFIG` to change that.', 'simple-csv-redirects-with-cloudflare' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in code(). ?></li>
+			<li><?php echo self::code( __( 'An account API token (Manage Account → Account API Tokens, starts with `cfat_`) also works, with the same permissions.', 'simple-csv-redirects-with-cloudflare' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in code(). ?></li>
 			<?php if ( is_multisite() ) : ?>
 				<li><?php esc_html_e( 'On multisite, the top-level settings apply to every site. An entry keyed by site ID replaces only the settings it lists for that site; false switches the plugin off for that site. Network super admins always have access.', 'simple-csv-redirects-with-cloudflare' ); ?></li>
 			<?php endif; ?>
@@ -898,7 +903,7 @@ final class RFCF_Admin {
 			$items .= '<li>' . esc_html( $e ) . '</li>';
 		}
 		wp_admin_notice(
-			'<p>' . esc_html__( 'These domains in RFCF_CONFIG (wp-config.php) could not be loaded:', 'simple-csv-redirects-with-cloudflare' ) . '</p><ul>' . $items . '</ul>'
+			'<p>' . self::code( __( 'These domains in `RFCF_CONFIG` (`wp-config.php`) could not be loaded:', 'simple-csv-redirects-with-cloudflare' ) ) . '</p><ul>' . $items . '</ul>'
 			. '<p><a href="' . esc_url( $this->cf_url( [ 'refresh' => 1 ] ) ) . '">' . esc_html__( 'Try again', 'simple-csv-redirects-with-cloudflare' ) . '</a></p>',
 			[ 'type' => 'warning', 'paragraph_wrap' => false ]
 		);

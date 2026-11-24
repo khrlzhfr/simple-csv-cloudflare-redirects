@@ -4,7 +4,7 @@ Tags: redirects, redirect, csv, cloudflare, 301
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.1.2
+Stable tag: 1.1.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -75,6 +75,9 @@ Zone → Single Redirect → Edit, and Zone → Zone → Read, limited to the do
 
 == Changelog ==
 
+= 1.1.3 =
+* Column names, setting names, file names and values on the Setup and CSV Rules tabs are shown as code.
+
 = 1.1.2 =
 * The example CSV on the Setup tab no longer ends with an empty line.
 
@@ -100,7 +103,7 @@ Zone → Single Redirect → Edit, and Zone → Zone → Read, limited to the do
 
 == Upgrade Notice ==
 
-= 1.1.2 =
+= 1.1.3 =
 Fixes where the query string goes when a CSV redirect target has a #fragment, and tidies the Setup tab.
 
 = 1.1.0 =

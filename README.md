@@ -1,6 +1,6 @@
 # Simple CSV Redirects with Cloudflare
 
-By [Khairil Zhafri](https://khrlzh.fr). Version 1.1.2. Requires WordPress 6.4+ and PHP 7.4+. Folder, main file and text domain: `simple-csv-redirects-with-cloudflare`.
+By [Khairil Zhafri](https://khrlzh.fr). Version 1.1.3. Requires WordPress 6.4+ and PHP 7.4+. Folder, main file and text domain: `simple-csv-redirects-with-cloudflare`.
 
 Manage redirects from **Tools → Redirects** in two ways:
 
@@ -121,6 +121,9 @@ My Profile → API Tokens → Create Token → Create Custom Token:
 Deleting the plugin removes the change log, its caches, and each site's `uploads/redirects` folder. Cloudflare rules stay in Cloudflare.
 
 ## Changelog
+
+### 1.1.3
+- Column names, setting names, file names and values on the Setup and CSV Rules tabs are shown as code.
 
 ### 1.1.2
 - The example CSV on the Setup tab no longer ends with an empty line.
