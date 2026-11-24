@@ -1,6 +1,6 @@
 # Simple CSV Redirects with Cloudflare
 
-By [Khairil Zhafri](https://khrlzh.fr). Version 1.1.0. Requires WordPress 6.4+ and PHP 7.4+. Folder, main file and text domain: `simple-csv-redirects-with-cloudflare`.
+By [Khairil Zhafri](https://khrlzh.fr). Version 1.1.1. Requires WordPress 6.4+ and PHP 7.4+. Folder, main file and text domain: `simple-csv-redirects-with-cloudflare`.
 
 Manage redirects from **Tools → Redirects** in two ways:
 
@@ -121,6 +121,10 @@ My Profile → API Tokens → Create Token → Create Custom Token:
 Deleting the plugin removes the change log, its caches, and each site's `uploads/redirects` folder. Cloudflare rules stay in Cloudflare.
 
 ## Changelog
+
+### 1.1.1
+- CSV redirects with `preserve_query_string` put the query string before any `#fragment` in the target.
+- The `X-Redirect-By` header on CSV redirects names the plugin.
 
 ### 1.1.0
 - Renamed to **Simple CSV Redirects with Cloudflare** (WordPress.org asks for third-party brand names to be framed with "for" or "with"). Folder, main file, text domain and repo are now `simple-csv-redirects-with-cloudflare`. WordPress treats it as a new plugin: download your CSV from the old copy first, because deleting the old copy removes its CSV and change log, then upload the CSV again in the new one.

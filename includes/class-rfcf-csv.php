@@ -388,7 +388,11 @@ final class RFCF_CSV {
 				$url = home_url( $url );
 			}
 			if ( $preserve && '' !== $query ) {
-				$url .= ( false === strpos( $url, '?' ) ? '?' : '&' ) . $query;
+				// The query string goes before any #fragment in the target.
+				$hash = strpos( $url, '#' );
+				$frag = false === $hash ? '' : substr( $url, $hash );
+				$url  = false === $hash ? $url : substr( $url, 0, $hash );
+				$url .= ( false === strpos( $url, '?' ) ? '?' : '&' ) . $query . $frag;
 			}
 			return [
 				'url'    => $url,
@@ -421,7 +425,7 @@ final class RFCF_CSV {
 			}
 		}
 
-		wp_redirect( $hit['url'], $hit['status'], 'Redirects' ); // phpcs:ignore WordPress.Security.SafeRedirect -- targets are set by site editors and may be external.
+		wp_redirect( $hit['url'], $hit['status'], 'Simple CSV Redirects with Cloudflare' ); // phpcs:ignore WordPress.Security.SafeRedirect -- targets are set by site editors and may be external.
 		exit;
 	}
 }
