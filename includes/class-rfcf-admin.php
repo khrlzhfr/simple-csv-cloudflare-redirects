@@ -833,7 +833,7 @@ final class RFCF_Admin {
 		?>
 		<h2><?php esc_html_e( 'CSV Rules', 'simple-csv-redirects-with-cloudflare' ); ?></h2>
 		<p><?php esc_html_e( 'CSV rules work without any setup. Add and edit them on the CSV Rules tab, or download the CSV, edit it in a spreadsheet app and upload it again.', 'simple-csv-redirects-with-cloudflare' ); ?></p>
-		<pre><code><?php echo esc_html( RFCF_CSV::TEMPLATE ); ?></code></pre>
+		<pre><code><?php echo esc_html( rtrim( RFCF_CSV::TEMPLATE ) ); ?></code></pre>
 		<ul class="ul-disc">
 			<li><?php esc_html_e( 'description is a note for people; it isn’t used for matching.', 'simple-csv-redirects-with-cloudflare' ); ?></li>
 			<li><?php esc_html_e( 'source is a path on this site, starting with /. Use * as a wildcard. Letter case, trailing slashes and the query string are ignored when matching.', 'simple-csv-redirects-with-cloudflare' ); ?></li>

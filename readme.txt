@@ -4,7 +4,7 @@ Tags: redirects, redirect, csv, cloudflare, 301
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -75,6 +75,9 @@ Zone → Single Redirect → Edit, and Zone → Zone → Read, limited to the do
 
 == Changelog ==
 
+= 1.1.2 =
+* The example CSV on the Setup tab no longer ends with an empty line.
+
 = 1.1.1 =
 * CSV redirects with preserve_query_string now put the visitor's query string before any #fragment in the target (for example /new?a=1#section, not /new#section?a=1).
 * The X-Redirect-By header on CSV redirects now names the plugin.
@@ -97,8 +100,8 @@ Zone → Single Redirect → Edit, and Zone → Zone → Read, limited to the do
 
 == Upgrade Notice ==
 
-= 1.1.1 =
-Fixes where the query string goes when a CSV redirect target has a #fragment.
+= 1.1.2 =
+Fixes where the query string goes when a CSV redirect target has a #fragment, and tidies the Setup tab.
 
 = 1.1.0 =
 New name and plugin folder. Download your CSV before deleting the old copy.
