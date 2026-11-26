@@ -48,6 +48,7 @@ function rfcf_uninstall_site() {
 	global $wpdb;
 
 	delete_option( 'rfcf_log' );
+	delete_option( 'rfcf_csv_url' );
 	delete_transient( 'rfcf_csv_' . get_current_blog_id() );
 	// Cached Cloudflare lookups have hashed names, so remove them by prefix.
 	$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '\\_transient\\_rfcf\\_%' OR option_name LIKE '\\_transient\\_timeout\\_rfcf\\_%'" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery

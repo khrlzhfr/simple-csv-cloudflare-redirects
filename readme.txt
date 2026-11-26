@@ -4,7 +4,7 @@ Tags: redirects, redirect, csv, cloudflare, 301
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.2.0
+Stable tag: 1.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -44,6 +44,10 @@ It sends your API token, your Cloudflare zone (domain) names or IDs, and the red
 
 Cloudflare's [Terms of Use](https://www.cloudflare.com/website-terms/) and [Privacy Policy](https://www.cloudflare.com/privacypolicy/) apply.
 
+**Import from URL.** When someone with access uses Import from URL on the CSV Rules tab, the plugin downloads the CSV from the address they enter, for example a Google Sheet (`docs.google.com`), a file in Google Drive (`drive.google.com`) or Dropbox (`dropbox.com`). Only the request for that file is sent; nothing about your site or its visitors. It happens only when that button is used.
+
+Google's [Terms of Service](https://policies.google.com/terms) and [Privacy Policy](https://policies.google.com/privacy), or Dropbox's [Terms](https://www.dropbox.com/terms) and [Privacy Policy](https://www.dropbox.com/privacy), apply to files fetched from them.
+
 == Installation ==
 
 1. Install and activate the plugin.
@@ -61,6 +65,10 @@ Cloudflare's [Terms of Use](https://www.cloudflare.com/website-terms/) and [Priv
 
 `description, source, target, status, preserve_query_string, enabled`. Only `source` and `target` are required. Use the **Setup** tab or download the template for an example.
 
+= Can I keep the rules in a Google Sheet? =
+
+Yes. Share the sheet so anyone with the link can view it, paste its link under **Import from URL** on the CSV Rules tab and select Import. The tab in the link is used. Import again whenever you change the sheet; the address is remembered. Rows are checked first, and if any row has a problem nothing changes.
+
 = Do CSV rules work on cached pages? =
 
 No. CSV rules run inside WordPress, so they don't apply to pages served from a page cache or to files such as PDFs. Use Cloudflare Rules for those.
@@ -74,6 +82,9 @@ Yes. Each site has its own CSV file and change log. In `wp-config.php`, top-leve
 Zone → Single Redirect → Edit, and Zone → Zone → Read, limited to the domains the site should manage.
 
 == Changelog ==
+
+= 1.3.0 =
+* Import from URL: fetch the CSV rules from a web address, including Google Sheets, Google Drive and Dropbox sharing links. It is checked like an upload, and the address is remembered for the next import.
 
 = 1.2.0 =
 * Renamed to khrlzhfr Simple CSV Redirects with Cloudflare. The folder and text domain are now `khrlzhfr-simple-csv-redirects-with-cloudflare`. To switch a site, install this version, then delete the old copy: settings and data are kept.
@@ -107,6 +118,9 @@ Zone → Single Redirect → Edit, and Zone → Zone → Read, limited to the do
 * Change log of every rule change.
 
 == Upgrade Notice ==
+
+= 1.3.0 =
+CSV rules can be imported from a URL, such as a Google Sheet.
 
 = 1.2.0 =
 New name and folder. Install this version first, then delete the old copy; your settings and data are kept.

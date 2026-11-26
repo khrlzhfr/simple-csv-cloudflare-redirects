@@ -32,6 +32,7 @@ final class RFCF_Admin {
 			add_action( 'admin_post_rfcf_' . $a . '_rule', [ $self, 'handle_' . $a . '_rule' ] );
 		}
 		add_action( 'admin_post_rfcf_upload_csv', [ $self, 'handle_upload_csv' ] );
+		add_action( 'admin_post_rfcf_import_url', [ $self, 'handle_import_url' ] );
 		add_action( 'admin_post_rfcf_download_csv', [ $self, 'handle_download_csv' ] );
 		foreach ( [ 'save', 'toggle', 'delete', 'move' ] as $a ) {
 			add_action( 'admin_post_rfcf_csv_' . $a, [ $self, 'handle_csv_' . $a ] );
@@ -446,6 +447,22 @@ final class RFCF_Admin {
 			</table>
 			<?php submit_button( __( 'Upload CSV', 'khrlzhfr-simple-csv-redirects-with-cloudflare' ) ); ?>
 		</form>
+		<h2><?php esc_html_e( 'Import from URL', 'khrlzhfr-simple-csv-redirects-with-cloudflare' ); ?></h2>
+		<p><?php esc_html_e( 'Or fetch the CSV from a web address, such as a Google Sheet. It is fetched once and checked like an upload. To bring in later changes, import it again; the address is remembered.', 'khrlzhfr-simple-csv-redirects-with-cloudflare' ); ?></p>
+		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+			<input type="hidden" name="action" value="rfcf_import_url">
+			<?php wp_nonce_field( 'rfcf_import_url' ); ?>
+			<table class="form-table" role="presentation">
+				<tr>
+					<th scope="row"><label for="rfcf-csv-url"><?php esc_html_e( 'CSV address', 'khrlzhfr-simple-csv-redirects-with-cloudflare' ); ?></label></th>
+					<td>
+						<input type="url" id="rfcf-csv-url" name="csv_url" class="large-text code" value="<?php echo esc_attr( (string) get_option( 'rfcf_csv_url', '' ) ); ?>" placeholder="https://docs.google.com/spreadsheets/d/…" required>
+						<p class="description"><?php esc_html_e( 'Paste the sharing link of a Google Sheet (the tab in the link is used) or of a CSV file in Google Drive or Dropbox, or any public CSV address. Share it so anyone with the link can view it.', 'khrlzhfr-simple-csv-redirects-with-cloudflare' ); ?></p>
+					</td>
+				</tr>
+			</table>
+			<?php submit_button( __( 'Import from URL', 'khrlzhfr-simple-csv-redirects-with-cloudflare' ), 'secondary' ); ?>
+		</form>
 		<?php
 	}
 
@@ -753,12 +770,34 @@ final class RFCF_Admin {
 			exit;
 		}
 
-		$content = (string) file_get_contents( $f['tmp_name'] );
-		$parsed  = RFCF_CSV::parse( $content );
+		$this->import_csv( (string) file_get_contents( $f['tmp_name'] ), $back );
+	}
+
+	/** Import from URL: fetches the CSV, then treats it exactly like an upload. */
+	public function handle_import_url() {
+		$this->require_cap();
+		check_admin_referer( 'rfcf_import_url' );
+		$back = $this->page_url();
+
+		$url = isset( $_POST['csv_url'] ) ? esc_url_raw( trim( wp_unslash( $_POST['csv_url'] ) ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitized by esc_url_raw().
+		update_option( 'rfcf_csv_url', $url, false );
+
+		$content = RFCF_CSV::fetch( $url );
+		if ( is_wp_error( $content ) ) {
+			$this->notice( 'error', $content->get_error_message() );
+			wp_safe_redirect( $back );
+			exit;
+		}
+		$this->import_csv( $content, $back );
+	}
+
+	/** Checks CSV text and, if every row is valid, replaces the CSV rules with it. */
+	private function import_csv( $content, $back ) {
+		$parsed = RFCF_CSV::parse( $content );
 		if ( $parsed['errors'] ) {
 			$shown = array_slice( $parsed['errors'], 0, 10 );
 			$more  = count( $parsed['errors'] ) - count( $shown );
-			$msg   = __( 'The CSV was not uploaded. Fix these problems and try again:', 'khrlzhfr-simple-csv-redirects-with-cloudflare' ) . ' ' . implode( ' ', $shown );
+			$msg   = __( 'The CSV was not imported. Fix these problems and try again:', 'khrlzhfr-simple-csv-redirects-with-cloudflare' ) . ' ' . implode( ' ', $shown );
 			if ( $more > 0 ) {
 				/* translators: %d: number of further problems */
 				$msg .= ' ' . sprintf( _n( '(and %d more problem)', '(and %d more problems)', $more, 'khrlzhfr-simple-csv-redirects-with-cloudflare' ), $more );
@@ -790,7 +829,7 @@ final class RFCF_Admin {
 			sprintf( $fmt, basename( $new ), $count )
 		);
 		/* translators: %d: number of redirects */
-		$this->notice( 'success', sprintf( _n( 'CSV uploaded with %d rule.', 'CSV uploaded with %d rules.', $count, 'khrlzhfr-simple-csv-redirects-with-cloudflare' ), $count ) );
+		$this->notice( 'success', sprintf( _n( 'CSV imported with %d rule.', 'CSV imported with %d rules.', $count, 'khrlzhfr-simple-csv-redirects-with-cloudflare' ), $count ) );
 		wp_safe_redirect( $back );
 		exit;
 	}

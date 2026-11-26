@@ -3,7 +3,7 @@
  * Plugin Name:       khrlzhfr Simple CSV Redirects with Cloudflare
  * Plugin URI:        https://github.com/khrlzhfr/simple-csv-redirects-with-cloudflare
  * Description:       Manage redirects as CSV rules in WordPress, and optionally as Cloudflare Single Redirect rules, from Tools → Redirects.
- * Version:           1.2.0
+ * Version:           1.3.0
  * Requires at least: 6.4
  * Requires PHP:      7.4
  * Author:            Khairil Zhafri
@@ -50,7 +50,7 @@ if ( defined( 'RFCF_FILE' ) ) {
 }
 
 define( 'RFCF_FILE', __FILE__ );
-define( 'RFCF_VERSION', '1.2.0' );
+define( 'RFCF_VERSION', '1.3.0' );
 
 require_once __DIR__ . '/includes/class-rfcf-config.php';
 require_once __DIR__ . '/includes/class-rfcf-csv.php';

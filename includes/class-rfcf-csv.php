@@ -92,6 +92,65 @@ final class RFCF_CSV {
 	}
 
 	/**
+	 * Where to download a CSV from. Google Sheets and Google Drive sharing links
+	 * become their CSV download links (keeping the sheet tab), Dropbox links
+	 * their direct download. Anything else is used as it is.
+	 */
+	public static function download_url( $url ) {
+		$url = trim( (string) $url );
+		if ( preg_match( '#^https://docs\.google\.com/spreadsheets/d/(e/)?([A-Za-z0-9_-]+)#', $url, $m ) ) {
+			$gid = preg_match( '/[#&?]gid=([0-9]+)/', $url, $g ) ? $g[1] : '';
+			if ( $m[1] ) { // "Publish to the web" link.
+				return 'https://docs.google.com/spreadsheets/d/e/' . $m[2] . '/pub?output=csv' . ( '' !== $gid ? '&single=true&gid=' . $gid : '' );
+			}
+			return 'https://docs.google.com/spreadsheets/d/' . $m[2] . '/export?format=csv' . ( '' !== $gid ? '&gid=' . $gid : '' );
+		}
+		if ( preg_match( '~^https://drive\.google\.com/(?:file/d/|open\?id=|uc\?(?:[^#]*&)?id=)([A-Za-z0-9_-]+)~', $url, $m ) ) {
+			return 'https://drive.google.com/uc?export=download&id=' . $m[1];
+		}
+		if ( preg_match( '#^https://(?:www\.)?dropbox\.com/#', $url ) ) {
+			return add_query_arg( 'dl', '1', $url );
+		}
+		return $url;
+	}
+
+	/**
+	 * Downloads a CSV from a public web address (never the server's own network).
+	 *
+	 * @return string|WP_Error The CSV text.
+	 */
+	public static function fetch( $url ) {
+		if ( ! preg_match( '#^https?://#i', (string) $url ) || ! wp_http_validate_url( $url ) ) {
+			return new WP_Error( 'rfcf_url', __( 'Enter a full web address, starting with https://', 'khrlzhfr-simple-csv-redirects-with-cloudflare' ) );
+		}
+		$res = wp_safe_remote_get(
+			self::download_url( $url ),
+			[
+				'timeout'             => 20,
+				'redirection'         => 5,
+				'limit_response_size' => self::MAX_BYTES + 1,
+			]
+		);
+		if ( is_wp_error( $res ) ) {
+			return new WP_Error( 'rfcf_url', __( 'The CSV could not be fetched:', 'khrlzhfr-simple-csv-redirects-with-cloudflare' ) . ' ' . $res->get_error_message() );
+		}
+		$code = (int) wp_remote_retrieve_response_code( $res );
+		$body = (string) wp_remote_retrieve_body( $res );
+		$type = strtolower( (string) wp_remote_retrieve_header( $res, 'content-type' ) );
+		if ( 200 !== $code ) {
+			/* translators: %d: HTTP status code */
+			return new WP_Error( 'rfcf_url', sprintf( __( 'The address answered with HTTP %d. Check the address, and that the file is shared so anyone with the link can view it.', 'khrlzhfr-simple-csv-redirects-with-cloudflare' ), $code ) );
+		}
+		if ( strlen( $body ) > self::MAX_BYTES ) {
+			return new WP_Error( 'rfcf_url', __( 'The file is larger than 2 MB.', 'khrlzhfr-simple-csv-redirects-with-cloudflare' ) );
+		}
+		if ( false !== strpos( $type, 'text/html' ) || preg_match( '/^\s*<(?:!doctype|html)/i', $body ) ) {
+			return new WP_Error( 'rfcf_url', __( 'The address returned a web page, not a CSV. For Google Sheets or Google Drive, share the file so anyone with the link can view it.', 'khrlzhfr-simple-csv-redirects-with-cloudflare' ) );
+		}
+		return $body;
+	}
+
+	/**
 	 * A description without leading =, +, -, @, tab or carriage return, so a
 	 * spreadsheet opening the downloaded CSV can't treat it as a formula.
 	 * Descriptions are the only free-text column; the others are validated.
